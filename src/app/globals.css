@@ -1,0 +1,142 @@
+@import 'tailwindcss';
+
+/* 使用类控制主题 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #ffffff;
+    --foreground: #171717;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  overscroll-behavior: none; /* 防止滚动穿透 */
+}
+/* 隐藏全部滚动条 */
+::-webkit-scrollbar {
+  display: none;
+}
+html {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, 'SimSun', 'Songti SC', 'STSong', system-ui, Helvetica;
+}
+/* 隐藏标签导航栏的滚动条 */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* 链接样式 */
+/* .blog-content-prose a {
+  color: #93c5fd;
+  text-decoration: underline;
+} */
+
+/* 图片样式 - 确保不溢出容器 */
+/* .blog-content-prose img {
+  display: block;
+  object-fit: contain;
+  background-color: #2d3748;
+  min-width: 300px;
+  min-height: 200px;
+  max-width: 100%;
+  height: auto;
+  margin-top: 1em;
+  margin-bottom: 1em;
+} */
+
+/* 引用样式 */
+/* .blog-content-prose blockquote {
+  border-left: 4px solid #93c5fd;
+  padding-left: 1em;
+  margin-left: 0;
+  margin-right: 0;
+  color: #94a3b8;
+}
+ */
+
+/* 表头样式 */
+/* .blog-content-prose th {
+  padding: 0.75rem 1rem;
+  background-color: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid #475569;
+  font-weight: 600;
+  text-align: left;
+} */
+
+/* 表格内容单元格样式 */
+/* .blog-content-prose td {
+  padding: 0.75rem 1rem;
+  border: 1px solid #475569; 
+  color: #e2e8f0;
+}
+
+.blog-content-prose th {
+  background-color: rgba(100, 116, 139, 0.1);
+  font-weight: bold;
+  color: #f8fafc;
+}
+
+.blog-content-prose tr:last-child td {
+  border-bottom: 1px solid #64748b;
+}
+
+.blog-content-prose tr:hover td {
+  background-color: rgba(100, 116, 139, 0.05);
+} */
+
+/* 页面内容切换动画，应用于main。注意这个动画会创建新的堆叠上下文 */
+.page-transition {
+  opacity: 0;
+  animation: fadeIn 0.7s ease-out forwards;
+  will-change: opacity, transform;
+}
+
+.page-transition.exit {
+  animation: fadeOut 0.7s ease-in forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+}
