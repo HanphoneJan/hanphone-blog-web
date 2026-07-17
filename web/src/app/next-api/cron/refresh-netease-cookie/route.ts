@@ -7,7 +7,13 @@ export const runtime = 'nodejs'
  * 外部定时任务调用端点：刷新网易云音乐 Cookie。
  *
  * 调用方式：
- *   GET /next-api/cron/refresh-netease-cookie
+ *   GET /next-api/cron/refresh-netease-cookie/
+ *
+ * 注意：项目开启了 trailingSlash，URL 必须带尾斜杠；
+ * 否则 Next.js 会返回 308 重定向，未跟随重定向的客户端（如未加 -L 的 curl）
+ * 将静默失败。建议 cron 命令：
+ *   curl -sSL -H "x-internal-key: $INTERNAL_API_KEY" \
+ *     http://127.0.0.1:3000/next-api/cron/refresh-netease-cookie/
  *
  * 安全验证：
  *   - 通过 X-Internal-Key header 验证调用者身份
