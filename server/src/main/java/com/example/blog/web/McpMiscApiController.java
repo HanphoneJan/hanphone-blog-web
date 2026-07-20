@@ -1,6 +1,7 @@
 package com.example.blog.web;
 
 import com.example.blog.constants.CommonConstants;
+import com.example.blog.po.McpApiKey;
 import com.example.blog.po.Message;
 import com.example.blog.po.PersonInfo;
 import com.example.blog.po.Result;
@@ -8,6 +9,7 @@ import com.example.blog.po.StatusCode;
 import com.example.blog.service.BlogMonthlyVisitsService;
 import com.example.blog.service.BlogService;
 import com.example.blog.service.CommentService;
+import com.example.blog.service.McpApiKeyService;
 import com.example.blog.service.MessageService;
 import com.example.blog.service.PersonInfoService;
 import com.example.blog.util.InternalKeyVerifier;
@@ -31,18 +33,57 @@ public class McpMiscApiController {
     private final BlogService blogService;
     private final CommentService commentService;
     private final BlogMonthlyVisitsService blogMonthlyVisitsService;
+    private final McpApiKeyService mcpApiKeyService;
     private final InternalKeyVerifier keyVerifier;
 
     public McpMiscApiController(MessageService messageService, PersonInfoService personInfoService,
                                 BlogService blogService, CommentService commentService,
                                 BlogMonthlyVisitsService blogMonthlyVisitsService,
+                                McpApiKeyService mcpApiKeyService,
                                 InternalKeyVerifier keyVerifier) {
         this.messageService = messageService;
         this.personInfoService = personInfoService;
         this.blogService = blogService;
         this.commentService = commentService;
         this.blogMonthlyVisitsService = blogMonthlyVisitsService;
+        this.mcpApiKeyService = mcpApiKeyService;
         this.keyVerifier = keyVerifier;
+    }
+
+    // ========== MCP 密钥校验（MCP server 专用） ==========
+
+    /**
+     * 校验外部 Agent 携带的 Bearer MCP 密钥。
+     * 由 MCP server 在收到 Agent 请求时调用，传入 X-Internal-Key 以取得内部访问权限。
+     *
+     * 响应 data.valid=true 时还附 keyId / keyName / userId 等信息，可用于审计。
+     */
+    @PostMapping("/verify-key")
+    public Result<Map<String, Object>> verifyMcpKey(@RequestBody Map<String, Object> body,
+                                                    @RequestHeader(value = "X-Internal-Key", defaultValue = "") String key) {
+        if (!keyVerifier.verify(key)) {
+            return unauthorized();
+        }
+        Object mcpKey = body.get("key");
+        if (!(mcpKey instanceof String)) {
+            return new Result<>(false, StatusCode.ERROR, "参数 key 必须为字符串", null);
+        }
+        try {
+            java.util.Optional<McpApiKey> found = mcpApiKeyService.verify((String) mcpKey);
+            Map<String, Object> result = new HashMap<>();
+            if (found.isPresent()) {
+                McpApiKey apiKey = found.get();
+                result.put("valid", true);
+                result.put("keyId", apiKey.getId());
+                result.put("keyName", apiKey.getName());
+                result.put("userId", apiKey.getUser().getId());
+                return new Result<>(true, StatusCode.OK, "验证通过", result);
+            }
+            result.put("valid", false);
+            return new Result<>(true, StatusCode.OK, "密钥无效或已停用", result);
+        } catch (Exception e) {
+            return new Result<>(false, StatusCode.ERROR, "验证失败: " + e.getMessage(), null);
+        }
     }
 
     // ========== 留言 ==========

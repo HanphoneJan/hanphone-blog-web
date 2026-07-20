@@ -2,11 +2,11 @@ import { existsSync, readFileSync } from 'node:fs';
 
 export interface McpConfig {
   baseUrl: string;
-  internalApiKey?: string;
-  mcpApiKey: string;
+  internalApiKey: string;
   port: number;
   authorId?: number;
   authorNickname: string;
+  verifyCacheTtlMs: number;
 }
 
 function loadEnvFile(): void {
@@ -15,7 +15,7 @@ function loadEnvFile(): void {
       process.loadEnvFile();
       return;
     } catch {
-      // .env 不存在时退回手动解析（可能仍无文件，下面会静默跳过）
+      // .env 不存在时退回手动解析
     }
   }
   if (!existsSync('.env')) return;
@@ -32,12 +32,12 @@ export function loadConfig(): McpConfig {
 
   const baseUrl = (process.env.BLOG_API_BASE_URL || 'https://hanphone.cn/api').replace(/\/+$/, '');
 
-  const mcpApiKey = process.env.MCP_API_KEY?.trim();
-  if (!mcpApiKey) {
-    throw new Error('缺少必需的环境变量 MCP_API_KEY（外部 Agent 访问 /mcp 的 Bearer 密钥）');
+  const internalApiKey = process.env.INTERNAL_API_KEY?.trim() || '';
+  if (!internalApiKey) {
+    throw new Error(
+      '缺少必需的环境变量 INTERNAL_API_KEY。MCP server 必须通过它向后端校验 Agent 提交的 MCP 密钥，请配置后重启。',
+    );
   }
-
-  const internalApiKey = process.env.INTERNAL_API_KEY?.trim() || undefined;
 
   const portRaw = process.env.MCP_PORT?.trim();
   const port = portRaw ? Number.parseInt(portRaw, 10) : 4002;
@@ -51,12 +51,15 @@ export function loadConfig(): McpConfig {
     throw new Error(`MCP_AUTHOR_ID 非法：${authorIdRaw}`);
   }
 
+  const cacheTtlRaw = process.env.MCP_VERIFY_CACHE_TTL_MS?.trim();
+  const verifyCacheTtlMs = cacheTtlRaw ? Number.parseInt(cacheTtlRaw, 10) : 60_000;
+
   return {
     baseUrl,
     internalApiKey,
-    mcpApiKey,
     port,
     authorId,
     authorNickname: process.env.MCP_AUTHOR_NICKNAME?.trim() || '博主',
+    verifyCacheTtlMs,
   };
 }

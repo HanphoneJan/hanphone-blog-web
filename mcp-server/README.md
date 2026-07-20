@@ -6,9 +6,10 @@
 
 ```
 外部 Agent（任意位置）
-      │  HTTPS + Bearer MCP_API_KEY
+      │  HTTPS + Bearer <MCP API Key>   ← 由管理员在博客后台 /admin/personal 页面生成
       ▼
 https://hanphone.cn/mcp ──nginx 反代──► mcp-server（Node.js，:4002）
+      │ 校验密钥 ──X-Internal-Key──► POST /internal/mcp/verify-key（:8090，命中缓存则跳过）
       │ 只读工具 ──────────────────────► 博客公开接口（/blogs、/essays …）
       │ 写工具/管理读取 ──X-Internal-Key──► 后端内部接口（/internal/mcp/**，:8090）
 ```
@@ -17,7 +18,7 @@ https://hanphone.cn/mcp ──nginx 反代──► mcp-server（Node.js，:4002
 
 | 密钥 | 方向 | 用途 | 配置位置 |
 |---|---|---|---|
-| `MCP_API_KEY` | Agent → MCP server | 对外访问凭证（Bearer） | `mcp-server/.env` |
+| **MCP API Key** | Agent → MCP server | 对外访问凭证（Bearer） | **博客后台 /admin/personal 页面**（每位管理员最多 10 个，支持启停/轮转） |
 | `INTERNAL_API_KEY` | MCP server → Spring Boot | 服务间内部调用凭证（`X-Internal-Key` 头） | `mcp-server/.env` 与 `server/.env` **必须一致** |
 
 MCP server 为**无状态**模式（stateless Streamable HTTP），每个请求独立会话，可直接用 pm2/systemd 常驻并水平扩展。
@@ -28,8 +29,8 @@ MCP server 为**无状态**模式（stateless Streamable HTTP），每个请求�
 # 安装依赖（在仓库根目录）
 pnpm install
 
-# 配置
-cp mcp-server/.env.example mcp-server/.env   # 然后编辑 .env（见下节）
+# 配置（仅内部服务间凭证）
+cp mcp-server/.env.example mcp-server/.env   # 修改 INTERNAL_API_KEY = server/.env 一致
 
 # 构建
 pnpm --filter hanphone-blog-mcp build
@@ -38,23 +39,25 @@ pnpm --filter hanphone-blog-mcp build
 pnpm --filter hanphone-blog-mcp start        # 或开发模式：pnpm --filter hanphone-blog-mcp dev
 ```
 
+> Agent 访问 `/mcp` 时使用的 MCP API Key **不在 .env 里配置**，而是登录博客后台 `/admin/personal` 页面切到「MCP 密钥」tab 创建/管理。
+
 验证服务存活：
 
 ```bash
 curl http://127.0.0.1:4002/health
-# {"status":"ok","name":"hanphone-blog-mcp","version":"0.1.0", ...}
+# {"status":"ok","name":"hanphone-blog-mcp","version":"0.2.0", ...}
 ```
 
 ## 环境变量
 
 | 变量 | 必填 | 默认值 | 说明 |
 |---|---|---|---|
-| `MCP_API_KEY` | **是** | — | 外部 Agent 访问 `/mcp` 的 Bearer 密钥。用强随机串：`node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
+| `INTERNAL_API_KEY` | **是** | — | 内部接口密钥，与 `server/.env` 的 `INTERNAL_API_KEY` 一致 |
 | `MCP_PORT` | 否 | `4002` | 本服务监听端口 |
 | `BLOG_API_BASE_URL` | 否 | `https://hanphone.cn/api` | 博客 API 地址；本地联调后端时用 `http://localhost:8090` |
-| `INTERNAL_API_KEY` | 写工具必填 | — | 内部接口密钥，与 `server/.env` 的 `INTERNAL_API_KEY` 一致。未配置时只读工具仍可用 |
 | `MCP_AUTHOR_ID` | 随笔必填 | — | 创建内容时的作者用户 ID（管理员）。可先用 `list_users` 工具查询 |
 | `MCP_AUTHOR_NICKNAME` | 否 | `博主` | 管理员回复留言时显示的昵称 |
+| `MCP_VERIFY_CACHE_TTL_MS` | 否 | `60000` | 密钥校验结果的内存缓存 TTL（ms），60s 内重复请求同一 bearer 不会再打后端 |
 
 > 密钥建议只使用字母数字：后端安全过滤器会对请求头做 HTML 转义，特殊字符可能导致 `X-Internal-Key` 比对失败。
 
@@ -105,7 +108,7 @@ location = /mcp {
 
 ```bash
 claude mcp add --transport http hanphone-blog https://hanphone.cn/mcp \
-  --header "Authorization: Bearer <MCP_API_KEY>"
+  --header "Authorization: Bearer <在后台生成的 MCP API Key>"
 ```
 
 ### Claude Desktop / Cursor（JSON 配置）
@@ -117,7 +120,7 @@ claude mcp add --transport http hanphone-blog https://hanphone.cn/mcp \
       "type": "http",
       "url": "https://hanphone.cn/mcp",
       "headers": {
-        "Authorization": "Bearer <MCP_API_KEY>"
+        "Authorization": "Bearer <在后台生成的 MCP API Key>"
       }
     }
   }
@@ -199,7 +202,7 @@ claude mcp add --transport http hanphone-blog https://hanphone.cn/mcp \
 
 | 现象 | 排查 |
 |---|---|
-| `/mcp` 返回 401 | 检查 `Authorization: Bearer <MCP_API_KEY>` 头与 `.env` 是否一致 |
+| `/mcp` 返回 401 | 检查 `Authorization: Bearer <MCP API Key>`。密钥是否已在后台停用？请切到 `/admin/personal` → MCP 密钥 tab 查看状态 |
 | 写工具报「未配置 INTERNAL_API_KEY」 | `.env` 中配置并重启 MCP server |
 | 写工具报「未授权访问」 | 两端 `INTERNAL_API_KEY` 不一致；或密钥含 HTML 特殊字符 |
 | 写工具报 HTTP 404 | 后端未重新构建部署（`/internal/mcp/**` 不存在） |

@@ -15,7 +15,8 @@ export const SECTION_NAMES: Record<string, string> = {
   skills: '技能',
   works: '作品',
   hobbys: '爱好',
-  evaluations: '评价'
+  evaluations: '评价',
+  mcpKeys: 'MCP 密钥'
 }
 
 // 图标映射

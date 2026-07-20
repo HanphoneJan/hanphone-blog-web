@@ -117,6 +117,7 @@ export const ENDPOINTS = {
     FRIENDLINKS: `${API_BASE_URL}/admin/friendLinks`,
     ESSAY: `${API_BASE_URL}/admin/essay`,
     ESSAYS: `${API_BASE_URL}/admin/essays`,
-    DEAL_DELETED_TAG: `${API_BASE_URL}/admin/dealDeletedTag`
+    DEAL_DELETED_TAG: `${API_BASE_URL}/admin/dealDeletedTag`,
+    MCP_KEYS: `${API_BASE_URL}/admin/mcp-keys`
   }
 }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence, type Variants } from 'framer-motion'
-import { User, Code, BookOpen, Heart, MessageSquare, X, Check, Save, Loader2 } from 'lucide-react'
+import { User, Code, BookOpen, Heart, MessageSquare, X, Check, Save, Loader2, Key } from 'lucide-react'
 import { ENDPOINTS } from '@/lib/api'
 import apiClient from '@/lib/utils'
 import { showAlert } from '@/lib/Alert'
@@ -13,8 +13,9 @@ import { useSkills } from './hooks/useSkills'
 import { useWorks } from './hooks/useWorks'
 import { useHobbies } from './hooks/useHobbies'
 import { useEvaluations } from './hooks/useEvaluations'
+import { useMcpKeys } from './hooks/useMcpKeys'
 
-import { BasicInfoTab, SkillsTab, WorksTab, HobbiesTab, EvaluationsTab } from './components/tabs'
+import { BasicInfoTab, SkillsTab, WorksTab, HobbiesTab, EvaluationsTab, McpKeysTab } from './components/tabs'
 import { SkillForm, WorkForm, HobbyForm, EvaluationForm } from './components/forms'
 import { AvatarUpload } from './components/AvatarUpload'
 import { PasswordReset } from './components/PasswordReset'
@@ -64,7 +65,8 @@ const navItems = [
   { id: 'skills', label: '技能管理', shortLabel: '技能', icon: Code },
   { id: 'hobbys', label: '爱好管理', shortLabel: '爱好', icon: Heart },
   { id: 'works', label: '作品管理', shortLabel: '作品', icon: BookOpen },
-  { id: 'evaluations', label: '自我评价', shortLabel: '评价', icon: MessageSquare }
+  { id: 'evaluations', label: '自我评价', shortLabel: '评价', icon: MessageSquare },
+  { id: 'mcpKeys', label: 'MCP 密钥', shortLabel: '密钥', icon: Key }
 ]
 
 export default function ProfilePage() {
@@ -86,6 +88,17 @@ export default function ProfilePage() {
   const { works, setWorks, processWorksData, saveWork, deleteWork } = useWorks()
   const { hobbies, setHobbies, processHobbiesData, saveHobby, deleteHobby } = useHobbies()
   const { evaluations, setEvaluations, processEvaluationsData, saveEvaluation, deleteEvaluation } = useEvaluations()
+  const {
+    keys: mcpKeys,
+    loading: mcpKeysLoading,
+    opLoading: mcpKeysOpLoading,
+    revealedKey: mcpRevealedKey,
+    setRevealedKey: setMcpRevealedKey,
+    createKey: createMcpKey,
+    deleteKey: deleteMcpKey,
+    toggleKey: toggleMcpKey,
+    regenerateKey: regenerateMcpKey
+  } = useMcpKeys()
 
   // 本地状态
   const [activeSection, setActiveSection] = useState<SectionType>('info')
@@ -417,6 +430,28 @@ export default function ProfilePage() {
                 onAdd={() => openEditDialog('evaluations')}
                 onEdit={(evaluation, index) => openEditDialog('evaluations', evaluation, index)}
                 onDelete={(index, id) => deleteItem('evaluations', index, id)}
+              />
+            </motion.div>
+          )}
+
+          {activeSection === 'mcpKeys' && (
+            <motion.div
+              key="mcpKeys"
+              variants={tabVariants}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+            >
+              <McpKeysTab
+                keys={mcpKeys}
+                loading={mcpKeysLoading}
+                opLoading={mcpKeysOpLoading}
+                revealedKey={mcpRevealedKey}
+                setRevealedKey={setMcpRevealedKey}
+                createKey={createMcpKey}
+                deleteKey={deleteMcpKey}
+                toggleKey={toggleMcpKey}
+                regenerateKey={regenerateMcpKey}
               />
             </motion.div>
           )}

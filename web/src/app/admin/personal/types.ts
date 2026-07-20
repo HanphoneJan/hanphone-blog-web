@@ -87,4 +87,4 @@ export interface NavItem {
 }
 
 // Section 类型
-export type SectionType = 'info' | 'skills' | 'works' | 'hobbys' | 'evaluations' | 'avatar'
+export type SectionType = 'info' | 'skills' | 'works' | 'hobbys' | 'evaluations' | 'avatar' | 'mcpKeys'

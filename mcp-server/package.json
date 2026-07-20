@@ -1,6 +1,6 @@
 {
   "name": "hanphone-blog-mcp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "MCP server for Hanphone's Blog - lets external AI agents read and manage blog content",
   "type": "module",
