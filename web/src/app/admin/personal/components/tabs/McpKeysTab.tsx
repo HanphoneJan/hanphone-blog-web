@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Key, Plus, Trash2, RefreshCw, Copy, Check, Eye, EyeOff, Loader2, X } from 'lucide-react'
 import { McpKeySummary, McpKeyDetail, useMcpKeys } from '../../hooks/useMcpKeys'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
-import { showAlert } from '@/lib/alert'
+import { showAlert } from '@/lib/Alert'
 
 interface McpKeysTabProps {
   keys: McpKeySummary[]
