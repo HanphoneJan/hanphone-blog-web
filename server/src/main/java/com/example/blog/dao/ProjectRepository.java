@@ -29,4 +29,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpec
     List<Project> findByPublishedTrue();
 
     Page<Project> findByPublishedTrue(Pageable pageable);
+
+    long countByPublishedTrue();
 }

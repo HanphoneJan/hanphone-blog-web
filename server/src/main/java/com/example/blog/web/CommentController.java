@@ -2,6 +2,7 @@ package com.example.blog.web;
 
 import com.example.blog.constants.CommonConstants;
 import com.example.blog.enums.UserType;
+import com.example.blog.po.Blog;
 import com.example.blog.po.Comment;
 import com.example.blog.po.Result;
 import com.example.blog.po.StatusCode;
@@ -48,6 +49,10 @@ public class CommentController {
     //获取评论集合
     @GetMapping("/comments/{blogId}")
     public Result<List<Comment>> comments(@PathVariable Long blogId) {
+        Blog blog = blogService.getBlog(blogId);
+        if (!blog.isPublished()) {
+            return new Result<>(false, StatusCode.ERROR, "博客不存在", null);
+        }
         return new Result<>(true, StatusCode.OK, "获取博客评论成功", commentService.listCommentByBlogId(blogId));
     }
 
@@ -67,9 +72,13 @@ public class CommentController {
                     ? Long.parseLong(para.get("parentId").toString())
                     : CommonConstants.DEFAULT_PARENT_ID;
 
+            Blog blog = blogService.getBlog(blogId);
+            if (!blog.isPublished()) {
+                return new Result<>(false, StatusCode.ERROR, "博客不存在", null);
+            }
             Comment comment = new Comment();
             comment.setContent(content);
-            comment.setBlog(blogService.getBlog(blogId));
+            comment.setBlog(blog);
 
             if (userId != null) {
                 User user = userService.findUserById(userId);

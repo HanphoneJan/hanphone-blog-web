@@ -22,11 +22,19 @@ public interface DocRepository extends JpaRepository<Doc, Long>, JpaSpecificatio
 
     List<Doc> findByRecommendTrue(Pageable pageable);
 
+    List<Doc> findByRecommendTrueAndPublishedTrue();
+
+    List<Doc> findByRecommendTrueAndPublishedTrue(Pageable pageable);
+
     List<Doc> findByPublishedTrue();
 
     Page<Doc> findByPublishedTrue(Pageable pageable);
 
     Page<Doc> findByOrderByViewCountDesc(Pageable pageable);
+
+    Page<Doc> findByPublishedTrueOrderByViewCountDesc(Pageable pageable);
+
+    long countByPublishedTrue();
 
     Page<Doc> findByOrderByCreateTimeDesc(Pageable pageable);
 

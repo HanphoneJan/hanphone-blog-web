@@ -189,11 +189,11 @@ public class IndexController {
     @GetMapping("/site-stats")
     public Result<Map<String, Long>> getSiteStats() {
         Map<String, Long> stats = new HashMap<>();
-        stats.put("blogCount", blogService.countBlog());
-        stats.put("essayCount", essayService.count());
-        stats.put("projectCount", projectService.count());
+        stats.put("blogCount", blogService.countPublishedBlog());
+        stats.put("essayCount", essayService.countPublished());
+        stats.put("projectCount", projectService.countPublished());
         stats.put("messageCount", messageService.count());
-        stats.put("docCount", docService.count());
+        stats.put("docCount", docService.countPublished());
         return new Result<>(true, StatusCode.OK, "获取站点统计成功", stats);
     }
 }

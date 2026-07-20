@@ -37,4 +37,6 @@ public interface DocService {
     Boolean changePublished(Long id, Boolean published);
 
     Long count();
+
+    Long countPublished();
 }

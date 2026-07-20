@@ -41,6 +41,8 @@ public interface BlogService {
 
     Long countBlog();
 
+    Long countPublishedBlog();
+
     Long countViews();
 
     List<String> ViewCountByMonth();

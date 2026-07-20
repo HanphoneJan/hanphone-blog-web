@@ -26,6 +26,6 @@ public class ArchiveShowController {
 
     @GetMapping("/countBlog")
     public Result<Long> count(){
-        return new Result<>(true, StatusCode.OK, "查询博客列表成功", blogService.countBlog());
+        return new Result<>(true, StatusCode.OK, "查询博客列表成功", blogService.countPublishedBlog());
     }
 }

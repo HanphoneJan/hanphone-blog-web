@@ -58,6 +58,7 @@ public class EssayShowController {
 
     @GetMapping("/essays/{id}/comments")
     public Result<List<EssayComment>> getEssayComments(@PathVariable Long id) {
+        essayService.getEssayById(id);
         return new Result<>(true, StatusCode.OK, "获取随笔评论成功", essayCommentService.listEssayCommentByEssayId(id));
     }
 

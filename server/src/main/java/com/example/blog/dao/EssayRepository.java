@@ -36,4 +36,6 @@ public interface EssayRepository extends JpaRepository<Essay,Long>, JpaSpecifica
 
     List<Essay> findByPublishedTrue(Pageable pageable);
 
+    long countByPublishedTrue();
+
 }

@@ -270,6 +270,9 @@ public class BlogServiceImpl implements BlogService {
         requireNonNull(id, "blog id must not be null");
         try {
             Blog blog = blogRepository.getReferenceById(id);
+            if (!blog.isPublished()) {
+                throw new EntityNotFoundException("Blog not found with id: " + id);
+            }
             // 累加访问量
             blog.setViews(blog.getViews() + 1);
             blog = blogRepository.save(blog);
@@ -318,6 +321,15 @@ public class BlogServiceImpl implements BlogService {
             return blogRepository.count();
         } catch (Exception e) {
             throw new RuntimeException("Error counting blogs", e);
+        }
+    }
+
+    @Override
+    public Long countPublishedBlog() {
+        try {
+            return blogRepository.countByPublishedTrue();
+        } catch (Exception e) {
+            throw new RuntimeException("Error counting published blogs", e);
         }
     }
 
@@ -405,6 +417,10 @@ public class BlogServiceImpl implements BlogService {
 
             Blog blog = blogRepository.findById(blogId)
                     .orElseThrow(() -> new EntityNotFoundException("Blog not found with id: " + blogId));
+
+            if (!blog.isPublished()) {
+                throw new EntityNotFoundException("Blog not found with id: " + blogId);
+            }
 
             Optional<UserBlogLike> existingLike = userBlogLikeRepository.findByUserIdAndBlogId(userId, blogId);
 

@@ -42,4 +42,6 @@ public interface ProjectService {
     Boolean changePublished(Long projectId, Boolean published);
 
     Long count();
+
+    Long countPublished();
 }

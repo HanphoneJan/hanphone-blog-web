@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 
 //拦截到所有名字具有Controller的控制器
@@ -45,6 +46,14 @@ public class ControllerExceptionHandler {
         // 记录关键信息后立即返回，避免分配更多内存
         Result<Void> result = new Result<>(false, StatusCode.ERROR, "服务器内存不足，请稍后重试", null);
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(result);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseBody
+    public ResponseEntity<Result<Void>> handleEntityNotFound(HttpServletRequest request, EntityNotFoundException e) {
+        logger.warn("EntityNotFoundException! Request URL: {}, Message: {}", request.getRequestURL(), e.getMessage());
+        Result<Void> result = new Result<>(false, StatusCode.ERROR, "请求的资源不存在", null);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
     }
 
     /**

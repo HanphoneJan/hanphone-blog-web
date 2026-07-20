@@ -124,8 +124,12 @@ public class ProjectServiceImpl implements ProjectService {
     public Project getProject(Long id) {
         requireNonNull(id, "project id must not be null");
         try {
-            return projectRepository.findById(id)
+            Project project = projectRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("Project not found with id: " + id));
+            if (!Boolean.TRUE.equals(project.getPublished())) {
+                throw new EntityNotFoundException("Project not found with id: " + id);
+            }
+            return project;
         } catch (EntityNotFoundException e) {
             throw e;
         } catch (Exception e) {
@@ -293,6 +297,15 @@ public class ProjectServiceImpl implements ProjectService {
             return projectRepository.count();
         } catch (Exception e) {
             throw new RuntimeException("Failed to count projects", e);
+        }
+    }
+
+    @Override
+    public Long countPublished() {
+        try {
+            return projectRepository.countByPublishedTrue();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to count published projects", e);
         }
     }
 

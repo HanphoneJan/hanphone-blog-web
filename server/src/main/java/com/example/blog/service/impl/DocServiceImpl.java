@@ -69,7 +69,7 @@ public class DocServiceImpl implements DocService {
     public Page<Doc> listHotDoc(Pageable pageable) {
         requireNonNull(pageable, "pageable must not be null");
         try {
-            return docRepository.findByOrderByViewCountDesc(pageable);
+            return docRepository.findByPublishedTrueOrderByViewCountDesc(pageable);
         } catch (Exception e) {
             throw new RuntimeException("Failed to list hot docs", e);
         }
@@ -83,7 +83,7 @@ public class DocServiceImpl implements DocService {
         }
         try {
             Pageable pageable = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "createTime"));
-            return docRepository.findByRecommendTrue(pageable);
+            return docRepository.findByRecommendTrueAndPublishedTrue(pageable);
         } catch (Exception e) {
             throw new RuntimeException("Failed to list recommend docs with size: " + size, e);
         }
@@ -93,8 +93,12 @@ public class DocServiceImpl implements DocService {
     public Doc getDocByDocId(String docId) {
         requireNonNull(docId, "docId must not be null");
         try {
-            return docRepository.findByDocId(docId)
+            Doc doc = docRepository.findByDocId(docId)
                     .orElseThrow(() -> new EntityNotFoundException("Doc not found with docId: " + docId));
+            if (!Boolean.TRUE.equals(doc.getPublished())) {
+                throw new EntityNotFoundException("Doc not found with docId: " + docId);
+            }
+            return doc;
         } catch (EntityNotFoundException e) {
             throw e;
         } catch (Exception e) {
@@ -159,8 +163,15 @@ public class DocServiceImpl implements DocService {
     public Boolean incrementViewCount(String docId) {
         requireNonNull(docId, "docId must not be null");
         try {
+            Doc doc = docRepository.findByDocId(docId)
+                    .orElseThrow(() -> new EntityNotFoundException("Doc not found with docId: " + docId));
+            if (!Boolean.TRUE.equals(doc.getPublished())) {
+                throw new EntityNotFoundException("Doc not found with docId: " + docId);
+            }
             int affectedRows = docRepository.incrementViewCount(docId);
             return affectedRows > 0;
+        } catch (EntityNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("Failed to increment view count for doc: " + docId, e);
         }
@@ -198,6 +209,15 @@ public class DocServiceImpl implements DocService {
             return docRepository.count();
         } catch (Exception e) {
             throw new RuntimeException("Failed to count docs", e);
+        }
+    }
+
+    @Override
+    public Long countPublished() {
+        try {
+            return docRepository.countByPublishedTrue();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to count published docs", e);
         }
     }
 }

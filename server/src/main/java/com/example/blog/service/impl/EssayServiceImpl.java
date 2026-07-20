@@ -49,8 +49,14 @@ public class EssayServiceImpl implements EssayService {
     public Essay getEssayById(Long id) {
         Objects.requireNonNull(id, "essay id must not be null");
         try {
-            return essayRepository.findById(id)
+            Essay essay = essayRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("随笔不存在，ID: " + id));
+            if (!Boolean.TRUE.equals(essay.getPublished())) {
+                throw new EntityNotFoundException("随笔不存在，ID: " + id);
+            }
+            return essay;
+        } catch (EntityNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("获取随笔失败，ID: " + id, e);
         }
@@ -220,6 +226,10 @@ public class EssayServiceImpl implements EssayService {
             Essay essay = essayRepository.findById(essayId)
                     .orElseThrow(() -> new EntityNotFoundException("随笔不存在，ID: " + essayId));
 
+            if (!Boolean.TRUE.equals(essay.getPublished())) {
+                throw new EntityNotFoundException("随笔不存在，ID: " + essayId);
+            }
+
             Optional<UserEssayLike> existingLike = userEssayLikeRepository.findByUserIdAndEssayId(userId, essayId);
 
             if (isLike) {
@@ -354,6 +364,9 @@ public class EssayServiceImpl implements EssayService {
         try {
             Essay essay = essayRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("随笔不存在，ID: " + id));
+            if (!Boolean.TRUE.equals(essay.getPublished())) {
+                throw new EntityNotFoundException("随笔不存在，ID: " + id);
+            }
             List<EssayFileUrl> fileUrls = essayFileUrlRepository.getEssayFileUrlByEssay_Id(id);
             Optional<UserEssayLike> existingLike = userId != null
                     ? userEssayLikeRepository.findByUserIdAndEssayId(userId, id)
@@ -433,6 +446,15 @@ public class EssayServiceImpl implements EssayService {
             return essayRepository.count();
         } catch (Exception e) {
             throw new RuntimeException("获取随笔总数失败", e);
+        }
+    }
+
+    @Override
+    public Long countPublished() {
+        try {
+            return essayRepository.countByPublishedTrue();
+        } catch (Exception e) {
+            throw new RuntimeException("获取已发布随笔总数失败", e);
         }
     }
 

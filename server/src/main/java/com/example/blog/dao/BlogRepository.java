@@ -27,11 +27,12 @@ public interface BlogRepository extends JpaRepository<Blog, Long>, JpaSpecificat
     // 修复分组排序：用完整表达式替代别名
     @Query("select function('to_char', b.createTime, 'YYYY') as year " +
             "from Blog b " +
+            "where b.published = true " +
             "group by function('to_char', b.createTime, 'YYYY') " +
             "order by function('to_char', b.createTime, 'YYYY') desc")
     List<String> findGroupYear();
 
-    @Query("select b from Blog b where function('to_char', b.createTime, 'YYYY') = ?1")
+    @Query("select b from Blog b where function('to_char', b.createTime, 'YYYY') = ?1 and b.published = true")
     List<Blog> findByYear(String year);
 
     @Query("select b from Blog b where b.title like ?1 ")
@@ -86,5 +87,7 @@ public interface BlogRepository extends JpaRepository<Blog, Long>, JpaSpecificat
     @Modifying
     @Query("UPDATE Blog e SET e.recommend = :recommend WHERE e.id = :id")
     int updateRecommend(@Param("id") Long id, @Param("recommend") boolean recommend);
+
+    long countByPublishedTrue();
 
 }

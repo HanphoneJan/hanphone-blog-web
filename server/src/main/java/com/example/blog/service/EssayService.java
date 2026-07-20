@@ -41,4 +41,6 @@ public interface EssayService {
     List<Essay> listRecommendEssayTop(Integer size);
 
     Long count();
+
+    Long countPublished();
 }
