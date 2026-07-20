@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface McpApiKeyRepository extends JpaRepository<McpApiKey, Long> {
 
-    List<McpApiKey> findByUserOrderCreateTimeDesc(User user);
+    List<McpApiKey> findByUserOrderByCreateTimeDesc(User user);
 
     Optional<McpApiKey> findByKeyValueAndActive(String keyValue, boolean active);
 }

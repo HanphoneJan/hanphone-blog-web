@@ -29,7 +29,7 @@ public class McpApiKeyServiceImpl implements McpApiKeyService {
     public List<McpApiKey> listByUser(User user) {
         Objects.requireNonNull(user, "user must not be null");
         try {
-            return repository.findByUserOrderCreateTimeDesc(user);
+            return repository.findByUserOrderByCreateTimeDesc(user);
         } catch (Exception e) {
             throw new RuntimeException("Failed to list mcp api keys", e);
         }
