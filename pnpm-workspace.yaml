@@ -4,3 +4,4 @@ packages:
   - 'apps/photo-wall'
   - 'admin-file'
   - 'photo-wall-server'
+  - 'mcp-server'

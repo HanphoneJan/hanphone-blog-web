@@ -1,0 +1,34 @@
+{
+  "name": "hanphone-blog-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MCP server for Hanphone's Blog - lets external AI agents read and manage blog content",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "hanphone-blog-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "express": "^5.2.1",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.12.0",
+    "tsx": "^4.16.5",
+    "typescript": "^5.5.4"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
