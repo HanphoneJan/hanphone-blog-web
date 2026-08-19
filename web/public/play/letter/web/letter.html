@@ -231,7 +231,7 @@
       let name = sessionStorage.getItem("name") || "游客"; // 获取用户的名字
       if (userResponse && name) {
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "https://www.hanphone.top/letter/upload", true);
+        xhr.open("POST", "https://hanphone.cloud/letter/upload", true);
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhr.onreadystatechange = function () {
           if (xhr.readyState === 4 && xhr.status === 200) {

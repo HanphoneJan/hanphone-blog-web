@@ -163,7 +163,7 @@
       var birthday = document.getElementById("birthday").value;
       if (name && birthday) {
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "https://www.hanphone.top/letter/get", true);
+        xhr.open("POST", "https://hanphone.cloud/letter/get", true);
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhr.onreadystatechange = function () {
           if (xhr.readyState === 4 && xhr.status === 200) {
@@ -175,7 +175,7 @@
             sessionStorage.setItem('name', response.name);
             sessionStorage.setItem('nickname', response.nickname);
             modal.style.display = "none";
-            window.location.href = "https://www.hanphone.top/play/envelope/letter";
+            window.location.href = "https://hanphone.cloud/play/envelope/letter";
           }
           console.log("Reponse:", response.message); // 打印发送的内容
         };
