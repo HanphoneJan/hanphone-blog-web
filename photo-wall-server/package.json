@@ -12,7 +12,7 @@
     "url": "git+https://github.com/HanphoneJan/photo-wall-server.git",
     "directory": "nodejs"
   },
-  "author": "",
+  "author": "hanphone",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/HanphoneJan/photo-wall-server/issues"

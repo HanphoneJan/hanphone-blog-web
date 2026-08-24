@@ -182,10 +182,10 @@ php -S 127.0.0.1:3003 application.php
 - 环境变量示例：`archive-php/.env.example`
 - 关键配置入口：`archive-php/.env`
 
-## 🎨 项目特点
+## 部署
 
-- 双语言服务端实现，便于对照学习与逐步迁移
-- 与已开源前端项目可直接联调
-- 聚焦图片类应用的核心后端能力
-- 结构轻量，适合个人项目二次开发
-
+```Shell
+pm2 start ecosystem.config.cjs
+pm2 save
+pm2 startup
+```
