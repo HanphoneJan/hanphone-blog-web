@@ -9,6 +9,8 @@
 .classpath
 .project
 .settings/
+.opencode
+
 
 # OS
 .DS_Store
