@@ -60,7 +60,7 @@ export function McpKeysTab(props: McpKeysTabProps) {
   const handleDelete = async (id: number) => {
     try {
       await deleteKey(id)
-      showAlert('删除成功', 'success')
+      showAlert('删除成功', { type: 'success' })
     } catch (err: any) {
       showAlert(err.message || '删除失败')
     }
@@ -72,7 +72,7 @@ export function McpKeysTab(props: McpKeysTabProps) {
       if (detail) {
         setRevealedKey(detail)
         setShowKeyValue(prev => ({ ...prev, [detail.id]: true }))
-        showAlert('密钥已轮转，新密钥仅显示一次', 'success')
+        showAlert('密钥已轮转，新密钥仅显示一次', { type: 'success' })
       }
     } catch (err: any) {
       showAlert(err.message || '轮转失败')

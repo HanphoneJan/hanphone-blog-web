@@ -139,8 +139,9 @@ export function createMetadata(
 
   // 如果是文章类型，添加文章特有属性
   if (type === 'article' && publishedTime) {
-    (openGraph as Record<string, unknown>).publishedTime = publishedTime
-    openGraph.authors = authors
+    const ogArticle = openGraph as Record<string, unknown>
+    ogArticle.publishedTime = publishedTime
+    ogArticle.authors = authors
   }
 
   return {

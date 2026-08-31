@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, type Variants } from 'framer-motion'
 import { ExternalLink, Star, Sparkles } from 'lucide-react'
 
 interface Project {
@@ -21,7 +21,7 @@ interface PlayClientProps {
   initialProjects: Project[]
 }
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -29,7 +29,7 @@ const containerVariants = {
   }
 }
 
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, y: 25, scale: 0.96 },
   visible: {
     opacity: 1,

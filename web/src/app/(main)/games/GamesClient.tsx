@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, type Variants } from 'framer-motion'
 import { ExternalLink, Star } from 'lucide-react'
 import { useTheme } from '@/contexts/ThemeProvider'
 
@@ -40,7 +40,7 @@ function getTitleYellow(theme: string) {
   return (theme === 'light' || theme === 'macaron') ? '#d97706' : '#ffff00'
 }
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -48,7 +48,7 @@ const containerVariants = {
   }
 }
 
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, y: 30, scale: 0.95 },
   visible: {
     opacity: 1,
@@ -58,7 +58,7 @@ const cardVariants = {
   }
 }
 
-const titleVariants = {
+const titleVariants: Variants = {
   hidden: { opacity: 0, y: -20 },
   visible: {
     opacity: 1,

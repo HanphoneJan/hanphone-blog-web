@@ -17,7 +17,7 @@ export interface PersonalProfileData {
 
 const FALLBACK: PersonalProfileData = {
   profile: DEFAULT_PROFILE,
-  socialLinks: DEFAULT_SOCIAL_LINKS,
+  socialLinks: [...DEFAULT_SOCIAL_LINKS],
   externalLinks: DEFAULT_EXTERNAL_LINKS,
   internalLinks: DEFAULT_INTERNAL_LINKS
 }

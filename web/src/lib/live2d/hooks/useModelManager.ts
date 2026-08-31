@@ -5,11 +5,15 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import { ModelInfo, checkModelVersion, randomOtherOption, getLocalStorageInt, setLocalStorage } from '../utils';
+import { checkModelVersion, randomOtherOption, getLocalStorageInt, setLocalStorage } from '../utils';
 import logger from '../logger';
 
+interface ManagedModel {
+  paths?: string[];
+}
+
 interface UseModelManagerOptions {
-  models: ModelInfo[];
+  models: ManagedModel[];
   cdnPath?: string;
 }
 

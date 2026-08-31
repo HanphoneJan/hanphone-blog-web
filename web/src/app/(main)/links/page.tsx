@@ -1,18 +1,8 @@
 import { ENDPOINTS } from '@/lib/api'
 import LinkClient from './LinkClient'
+import type { FriendLink } from './LinkClient'
 
 import { API_CODE } from '@/lib/constants'
-interface FriendLink {
-  id: number
-  type: 'friend' | 'tool' | 'blog' | 'resource'
-  name: string
-  description: string
-  url: string
-  avatar: string
-  color: string
-  recommend: boolean
-  createTime: string
-}
 
 // ISR：每5分钟重新验证
 export const revalidate = 300

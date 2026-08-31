@@ -16,7 +16,7 @@ import ApplyModal from './components/ApplyModal'
 // 野兽派几何形状
 const GEOMETRIC_SHAPES = ['□', '△', '○', '◇', '✦', '◆', '▲', '▼']
 
-interface FriendLink {
+export interface FriendLink {
   id: number
   type: 'friend' | 'tool' | 'blog' | 'resource'
   name: string

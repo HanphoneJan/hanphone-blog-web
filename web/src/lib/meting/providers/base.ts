@@ -3,7 +3,7 @@
  * 移植自 Meting (https://github.com/metowolf/Meting)
  */
 
-import type Meting from './meting'
+import type Meting from '../meting'
 
 export default class BaseProvider {
   name = 'base'
