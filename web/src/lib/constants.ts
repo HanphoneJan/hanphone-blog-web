@@ -26,6 +26,9 @@ export const API_CODE = {
 export const TIME = {
   // API 请求超时时间
   API_TIMEOUT: 10000,
+
+  // 文件上传超时时间（大文件/弱网环境需要远大于普通请求的超时）
+  UPLOAD_TIMEOUT: 600000,
   
   // 提示框默认显示时长
   ALERT_DURATION: 3000,

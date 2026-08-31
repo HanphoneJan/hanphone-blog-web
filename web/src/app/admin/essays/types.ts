@@ -52,4 +52,18 @@ export interface FileToDelete {
   index: number
   isLocal: boolean
   fileName: string
+  id?: number
+}
+
+// 文件上传结果
+export interface UploadResult {
+  succeeded: EssayFile[]
+  failed: string[]
+}
+
+// 文件上传进度
+export interface UploadProgress {
+  current: number
+  total: number
+  fileName: string
 }

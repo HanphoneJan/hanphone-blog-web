@@ -475,6 +475,17 @@ const extractToken = (authHeader) => {
 
 // Token 验证中间件
 const authenticateToken = (req, res, next) => {
+  // 内部服务调用（服务间通信，如 blog server 回收文件），通过 x-internal-key 认证
+  const internalKey = req.headers["x-internal-key"];
+  if (
+    internalKey &&
+    process.env.INTERNAL_API_KEY &&
+    internalKey === process.env.INTERNAL_API_KEY
+  ) {
+    req.internal = true;
+    return next();
+  }
+
   // 检查是否是公开接口（不需要认证）
   const publicPaths = ['/upload/avatar'];
   if (publicPaths.includes(req.path)) {
@@ -730,7 +741,11 @@ app.post("/upload", authenticateToken, upload.single("file"), async (req, res) =
       urlDir = finalCategoryForResponse;
     }
 
-    const encodedUrlDir = encodeURIComponent(urlDir);
+    // 按路径段逐段编码，保留 / 分隔符（避免整串编码产生 %2F）
+    const encodedUrlDir = urlDir
+      .split("/")
+      .map((segment) => encodeURIComponent(segment))
+      .join("/");
     const encodedFilename = encodeURIComponent(req.file.filename);
     const urlPath = `${encodedUrlDir}/${encodedFilename}`;
 
@@ -858,7 +873,10 @@ app.post("/upload/batch", authenticateToken, upload.array("files", 20), async (r
         urlDir = finalCategoryForResponse;
       }
 
-      const encodedUrlDir = encodeURIComponent(urlDir);
+      const encodedUrlDir = urlDir
+        .split("/")
+        .map((segment) => encodeURIComponent(segment))
+        .join("/");
       const encodedFilename = encodeURIComponent(file.filename);
       const urlPath = `${encodedUrlDir}/${encodedFilename}`;
 
@@ -946,7 +964,7 @@ app.post("/upload/batch", authenticateToken, upload.array("files", 20), async (r
 // 删除文件接口
 app.delete("/delete", authenticateToken, async (req, res) => {
   try {
-    const { name, namespace, category, parentNamespace } = req.body;
+    const { name, namespace, category, parentNamespace, recursive } = req.body;
 
     if (!name) {
       return res.status(400).json({ error: "请提供要删除的名称" });
@@ -961,6 +979,16 @@ app.delete("/delete", authenticateToken, async (req, res) => {
       targetPath = path.join(baseUploadDir, parentNamespace, name);
     } else {
       targetPath = path.join(baseUploadDir, name);
+    }
+
+    // 路径安全校验：禁止越出上传根目录（防御 ../ 路径穿越）
+    const resolvedBase = path.resolve(baseUploadDir);
+    const resolvedTarget = path.resolve(targetPath);
+    if (
+      resolvedTarget === resolvedBase ||
+      !resolvedTarget.startsWith(resolvedBase + path.sep)
+    ) {
+      return res.status(400).json({ error: "非法的删除路径" });
     }
 
     if (!(await fileExists(targetPath))) {
@@ -989,6 +1017,18 @@ app.delete("/delete", authenticateToken, async (req, res) => {
       });
     } else if (stats.isDirectory()) {
       const items = await fs.readdir(targetPath);
+      if (recursive) {
+        await fs.rm(targetPath, { recursive: true, force: false });
+        return res.json({
+          code: 200,
+          message: "目录删除成功（含全部内容）",
+          type: "directory",
+          name,
+          namespace: namespace || parentNamespace || null,
+          category: category || null,
+          itemCount: items.length,
+        });
+      }
       if (items.length > 0) {
         return res
           .status(400)

@@ -1,7 +1,7 @@
 'use client'
 
 import { Save, Loader2, AlertCircle } from 'lucide-react'
-import type { Essay, EssayFile, FormErrors, FileInfo } from '../types'
+import type { Essay, FormErrors, FileInfo, UploadProgress } from '../types'
 import { MAX_CONTENT_LENGTH } from '../utils'
 import { FileUpload } from './FileUpload'
 
@@ -9,11 +9,13 @@ interface EssayFormProps {
   essay: Essay
   formErrors: FormErrors
   localFiles: FileInfo[]
+  uploadProgress: UploadProgress | null
   loading: boolean
   onTitleChange: (title: string) => void
   onContentChange: (content: string) => void
-  onFileSelect: (e: React.ChangeEvent<HTMLInputElement>, uploadedFileCount: number) => void
-  onOpenFileDeleteModal: (index: number, isLocal: boolean, fileName: string) => void
+  onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onOpenFileDeleteModal: (index: number, isLocal: boolean, fileName: string, id?: number) => void
+  onAddUrl: (url: string) => boolean
   onPublish: () => void
 }
 
@@ -21,13 +23,18 @@ export function EssayForm({
   essay,
   formErrors,
   localFiles,
+  uploadProgress,
   loading,
   onTitleChange,
   onContentChange,
   onFileSelect,
   onOpenFileDeleteModal,
+  onAddUrl,
   onPublish
 }: EssayFormProps) {
+  const isUploading = uploadProgress !== null
+  const isBusy = isUploading || loading
+
   return (
     <div className="p-6 space-y-6 min-h-[90vh]">
       {/* 标题输入 */}
@@ -83,21 +90,27 @@ export function EssayForm({
         uploadedFiles={essay.essayFileUrls || []}
         onFileSelect={onFileSelect}
         onOpenDeleteModal={onOpenFileDeleteModal}
+        onAddUrl={onAddUrl}
       />
 
       {/* 发布按钮 */}
-      <div className="flex justify-end">
+      <div className="flex justify-end items-center gap-3">
+        {isUploading && uploadProgress && (
+          <span className="text-sm text-[rgb(var(--muted))]">
+            正在上传 {uploadProgress.current}/{uploadProgress.total}：{uploadProgress.fileName}
+          </span>
+        )}
         <button
           onClick={onPublish}
-          disabled={loading}
+          disabled={isBusy}
           className={`px-6 py-2.5 rounded-lg transition-all duration-300 bg-[rgb(var(--primary))] hover:bg-[rgb(var(--primary-hover))] text-white flex items-center gap-2 ${
-            loading ? 'opacity-70' : ''
+            isBusy ? 'opacity-70 cursor-not-allowed' : ''
           }`}
         >
-          {loading ? (
+          {isBusy ? (
             <>
               <Loader2 className="animate-spin h-4 w-4" />
-              上传文件并发布...
+              {isUploading ? '上传文件中...' : '发布中...'}
             </>
           ) : (
             <>

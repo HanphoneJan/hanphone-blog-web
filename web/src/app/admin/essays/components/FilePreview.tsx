@@ -1,15 +1,15 @@
 'use client'
 
 import Image from 'next/image'
-import { X } from 'lucide-react'
+import { X, Link2 } from 'lucide-react'
 import type { EssayFile, FileInfo } from '../types'
-import { getFileIconByType, getFileName } from '../utils'
+import { getFileIconByType, getFileName, isInternalFileUrl } from '../utils'
 
 interface FilePreviewProps {
   file: FileInfo | EssayFile
   isLocal: boolean
   index: number
-  onDelete: (index: number, isLocal: boolean, fileName: string) => void
+  onDelete: (index: number, isLocal: boolean, fileName: string, id?: number) => void
 }
 
 export function FilePreview({ file, isLocal, index, onDelete }: FilePreviewProps) {
@@ -61,13 +61,14 @@ export function FilePreview({ file, isLocal, index, onDelete }: FilePreviewProps
   const uploadedFile = file as EssayFile
   const fileName = getFileName(uploadedFile)
   const FileIcon = getFileIconByType(uploadedFile.urlType, fileName)
+  const isExternal = !isInternalFileUrl(uploadedFile.url)
 
   return (
     <div className="relative rounded-lg overflow-hidden h-24 border border-slate-300 dark:border-slate-700 group">
       {uploadedFile.urlType === 'IMAGE' ? (
         <Image
           src={uploadedFile.url}
-          alt={`已上传图片 ${index + 1}`}
+          alt={`文件 ${index + 1}`}
           width={144}
           height={144}
           className="w-full h-full object-cover"
@@ -88,9 +89,15 @@ export function FilePreview({ file, isLocal, index, onDelete }: FilePreviewProps
           </span>
         </div>
       )}
+      {isExternal && (
+        <div className="absolute top-1 right-1 bg-purple-500/80 text-white text-xs px-1 rounded flex items-center gap-0.5">
+          <Link2 className="h-3 w-3" />
+          外链
+        </div>
+      )}
       <button
         type="button"
-        onClick={() => onDelete(index, false, fileName)}
+        onClick={() => onDelete(index, false, fileName, uploadedFile.id)}
         className="absolute inset-0 bg-[rgb(var(--overlay))]/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
         aria-label="删除文件"
       >

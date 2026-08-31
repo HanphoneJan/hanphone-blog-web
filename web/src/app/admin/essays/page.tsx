@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, type Variants } from 'framer-motion'
-import { Plus, FileText, X } from 'lucide-react'
+import { Plus, FileText } from 'lucide-react'
 import { showAlert } from '@/lib/Alert'
 import { ADMIN_ESSAY_LABELS } from '@/lib/labels'
 import { useEssays } from './hooks/useEssays'
@@ -11,6 +11,7 @@ import { useEssayForm } from './hooks/useEssayForm'
 import { useEssayFiles } from './hooks/useEssayFiles'
 import { EssayForm } from './components/EssayForm'
 import { EssayList } from './components/EssayList'
+import { isInternalFileUrl } from './utils'
 import type { Essay } from './types'
 
 // 动画变体定义
@@ -84,6 +85,7 @@ export default function EssayManagementPage() {
     setEditEssay,
     resetForm,
     removeUploadedFile,
+    addUrlFile,
     validateForm,
     prepareEssayData
   } = useEssayForm()
@@ -92,6 +94,7 @@ export default function EssayManagementPage() {
     localFiles,
     deleteFileModalVisible,
     fileToDelete,
+    uploadProgress,
     handleFileSelect,
     openFileDeleteModal,
     closeFileDeleteModal,
@@ -113,13 +116,19 @@ export default function EssayManagementPage() {
     if (!validateForm(localFiles.length)) return
 
     try {
-      // 1. 先上传所有本地文件
-      const uploadedFiles = await uploadAllFiles()
+      // 1. 先上传所有本地文件（失败的文件会保留在本地列表，成功的挂到表单）
+      const { succeeded, failed } = await uploadAllFiles(essay.title)
 
-      // 2. 准备随笔数据
-      const essayData = prepareEssayData(uploadedFiles)
+      // 2. 存在上传失败文件时暂停发布，提示用户后重试（避免静默丢失文件）
+      if (failed.length > 0) {
+        showAlert(ADMIN_ESSAY_LABELS.UPLOAD_FAIL_LIST(failed.join('、')))
+        return
+      }
 
-      // 3. 提交随笔数据到服务器
+      // 3. 准备随笔数据
+      const essayData = prepareEssayData(succeeded)
+
+      // 4. 提交随笔数据到服务器
       const success = await saveEssay(essayData)
 
       if (success) {
@@ -133,7 +142,7 @@ export default function EssayManagementPage() {
       console.error('发布随笔失败:', error)
       showAlert(ADMIN_ESSAY_LABELS.PUBLISH_FAIL)
     }
-  }, [validateForm, localFiles.length, uploadAllFiles, prepareEssayData, saveEssay, resetForm, clearLocalFiles])
+  }, [validateForm, localFiles.length, essay.title, uploadAllFiles, prepareEssayData, saveEssay, resetForm, clearLocalFiles])
 
   // 编辑随笔
   const handleEdit = useCallback((row: Essay) => {
@@ -166,8 +175,24 @@ export default function EssayManagementPage() {
 
   // 处理文件删除确认
   const handleFileDeleteConfirm = useCallback(async () => {
-    await confirmFileDelete(removeUploadedFile)
-  }, [confirmFileDelete, removeUploadedFile])
+    await confirmFileDelete(removeUploadedFile, essay.essayFileUrls || [])
+  }, [confirmFileDelete, removeUploadedFile, essay.essayFileUrls])
+
+  // 根据文件状态生成删除确认文案
+  const fileDeleteMessage = (() => {
+    if (!fileToDelete) return ''
+    if (fileToDelete.isLocal) {
+      return '确定要移除该文件吗？该文件尚未上传。'
+    }
+    const file = (essay.essayFileUrls || [])[fileToDelete.index]
+    if (!file || !isInternalFileUrl(file.url)) {
+      return '确定要移除该文件URL吗？'
+    }
+    if (file.id === 0) {
+      return '确定要删除该文件吗？文件将从服务器立即删除，此操作不可撤销。'
+    }
+    return '确定要删除该文件吗？保存随笔后，文件将从服务器删除。'
+  })()
 
   return (
     <motion.div
@@ -227,11 +252,13 @@ export default function EssayManagementPage() {
               essay={essay}
               formErrors={formErrors}
               localFiles={localFiles}
+              uploadProgress={uploadProgress}
               loading={loading}
               onTitleChange={setTitle}
               onContentChange={setContent}
               onFileSelect={handleFileSelect}
               onOpenFileDeleteModal={openFileDeleteModal}
+              onAddUrl={addUrlFile}
               onPublish={handlePublish}
             />
           </motion.div>
@@ -373,7 +400,9 @@ export default function EssayManagementPage() {
               >
                 <h3 className="text-lg font-medium text-[rgb(var(--text))] mb-4">确认删除文件</h3>
                 <p className="text-[rgb(var(--text-muted))] mb-6">
-                  确定要删除文件 &quot;{fileToDelete?.fileName}&quot; 吗？此操作不可撤销。
+                  文件 &quot;{fileToDelete?.fileName}&quot;
+                  <br />
+                  {fileDeleteMessage}
                 </p>
                 <div className="flex justify-end gap-3">
                   <motion.button

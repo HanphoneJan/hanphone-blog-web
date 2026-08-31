@@ -8,6 +8,7 @@ import { ADMIN_ESSAY_LABELS, ADMIN_LINK_LABELS } from '@/lib/labels'
 import type { Essay } from '../types'
 
 import { API_CODE } from '@/lib/constants'
+import { getUrlFileName } from '../utils'
 export function useEssays() {
   const [essayList, setEssayList] = useState<Essay[]>([])
   const [filteredEssayList, setFilteredEssayList] = useState<Essay[]>([])
@@ -54,7 +55,7 @@ export function useEssays() {
           published: item.published || false,
           essayFileUrls: (item.essayFileUrls || []).map(file => ({
             ...file,
-            name: file.name || file.url.split('/').pop() || `文件${file.id}`
+            name: file.name || getUrlFileName(file.url)
           }))
         }))
         setEssayList(list)

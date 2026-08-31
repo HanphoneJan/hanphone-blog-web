@@ -2,8 +2,10 @@
 
 import { useState, useCallback } from 'react'
 import { useUser } from '@/contexts/UserContext'
-import type { Essay, EssayFile, FormErrors, FileInfo } from '../types'
-import { validateEssayForm } from '../utils'
+import { showAlert } from '@/lib/Alert'
+import { ADMIN_ESSAY_LABELS } from '@/lib/labels'
+import type { Essay, EssayFile, FormErrors } from '../types'
+import { validateEssayForm, isValidFileUrl, getFileTypeByUrl, getUrlFileName } from '../utils'
 
 const initialEssay: Essay = {
   id: null,
@@ -42,7 +44,7 @@ export function useEssayForm() {
       recommend: essayData.recommend || false,
       essayFileUrls: (essayData.essayFileUrls || []).map(file => ({
         ...file,
-        name: file.name || file.url.split('/').pop() || `文件${file.id}`
+        name: file.name || getUrlFileName(file.url)
       }))
     })
     setFormErrors({})
@@ -66,6 +68,34 @@ export function useEssayForm() {
       essayFileUrls: prev.essayFileUrls?.filter((_, i) => i !== index) || []
     }))
   }, [])
+
+  // 直接添加文件URL（支持外链或本站文件地址）
+  const addUrlFile = useCallback((url: string): boolean => {
+    const trimmed = url.trim()
+    if (!isValidFileUrl(trimmed)) {
+      showAlert(ADMIN_ESSAY_LABELS.URL_ADD_INVALID)
+      return false
+    }
+    if (essay.essayFileUrls?.some(file => file.url === trimmed)) {
+      showAlert(ADMIN_ESSAY_LABELS.URL_ADD_DUPLICATE)
+      return false
+    }
+    const urlFile: EssayFile = {
+      id: 0,
+      url: trimmed,
+      urlType: getFileTypeByUrl(trimmed),
+      urlDesc: null,
+      isValid: true,
+      createTime: new Date().toISOString(),
+      name: getUrlFileName(trimmed)
+    }
+    setEssay(prev => ({
+      ...prev,
+      essayFileUrls: [...(prev.essayFileUrls || []), urlFile]
+    }))
+    showAlert(ADMIN_ESSAY_LABELS.URL_ADD_SUCCESS)
+    return true
+  }, [essay.essayFileUrls])
 
   // 验证表单
   const validateForm = useCallback((localFileCount: number): boolean => {
@@ -105,6 +135,7 @@ export function useEssayForm() {
     resetForm,
     setUploadedFiles,
     removeUploadedFile,
+    addUrlFile,
     validateForm,
     prepareEssayData
   }

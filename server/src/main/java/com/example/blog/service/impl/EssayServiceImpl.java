@@ -9,7 +9,10 @@ import com.example.blog.po.Essay;
 import com.example.blog.po.EssayFileUrl;
 import com.example.blog.po.User;
 import com.example.blog.po.UserEssayLike;
+import com.example.blog.service.AdminFileService;
 import com.example.blog.service.EssayService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -19,30 +22,37 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
 
 @Service
 public class EssayServiceImpl implements EssayService {
 
+    private static final Logger logger = LoggerFactory.getLogger(EssayServiceImpl.class);
+
     private final EssayRepository essayRepository;
     private final UserRepository userRepository;
     private final EssayFileUrlRepository essayFileUrlRepository;
     private final UserEssayLikeRepository userEssayLikeRepository;
+    private final AdminFileService adminFileService;
 
     // 构造函数参数非空校验
     public EssayServiceImpl(EssayRepository essayRepository,
                             EssayFileUrlRepository essayFileUrlRepository,
                             UserEssayLikeRepository userEssayLikeRepository,
-                            UserRepository userRepository) {
+                            UserRepository userRepository,
+                            AdminFileService adminFileService) {
         this.essayRepository = Objects.requireNonNull(essayRepository, "essayRepository must not be null");
         this.userRepository = Objects.requireNonNull(userRepository, "userRepository must not be null");
         this.essayFileUrlRepository = Objects.requireNonNull(essayFileUrlRepository, "essayFileUrlRepository must not be null");
         this.userEssayLikeRepository = Objects.requireNonNull(userEssayLikeRepository, "userEssayLikeRepository must not be null");
+        this.adminFileService = Objects.requireNonNull(adminFileService, "adminFileService must not be null");
     }
 
     @Override
@@ -148,8 +158,20 @@ public class EssayServiceImpl implements EssayService {
             if (!essayRepository.existsById(id)) {
                 throw new EntityNotFoundException("随笔不存在，ID: " + id);
             }
+            // 删除前收集文件URL，用于回收物理文件
+            List<String> fileUrls = essayFileUrlRepository.getEssayFileUrlByEssay_Id(id)
+                    .stream()
+                    .map(EssayFileUrl::getUrl)
+                    .filter(Objects::nonNull)
+                    .toList();
             essayFileUrlRepository.deleteByEssay_Id(id);
             essayRepository.deleteById(id);
+            // 回收物理文件（仅本站 blog/essay/ 下的文件，外链跳过）
+            try {
+                adminFileService.deleteEssayFiles(fileUrls);
+            } catch (Exception fileEx) {
+                logger.warn("回收随笔文件失败，随笔ID: {}", id, fileEx);
+            }
         } catch (EntityNotFoundException e) {
             throw e; // 保留原始业务异常
         } catch (Exception e) {
@@ -197,17 +219,44 @@ public class EssayServiceImpl implements EssayService {
                 existingEssay.setContent(essay.getContent());
             }
 
+            List<String> removedFileUrls = List.of();
             if (essay.getEssayFileUrls() != null) {
-                existingEssay.getEssayFileUrls().clear();
+                // 记录更新前的文件URL，用于找出被移除的文件
+                List<String> oldUrls = existingEssay.getEssayFileUrls().stream()
+                        .map(EssayFileUrl::getUrl)
+                        .filter(Objects::nonNull)
+                        .toList();
+                Set<String> keptUrls = new HashSet<>();
                 for (EssayFileUrl fileUrl : essay.getEssayFileUrls()) {
                     Objects.requireNonNull(fileUrl, "essayFileUrl must not be null");
+                    if (fileUrl.getUrl() != null) {
+                        keptUrls.add(fileUrl.getUrl());
+                    }
+                }
+                removedFileUrls = oldUrls.stream()
+                        .filter(url -> !keptUrls.contains(url))
+                        .toList();
+
+                existingEssay.getEssayFileUrls().clear();
+                for (EssayFileUrl fileUrl : essay.getEssayFileUrls()) {
                     fileUrl.setEssay(existingEssay);
                     fileUrl.setCreateTime(now);
                     existingEssay.getEssayFileUrls().add(fileUrl);
                 }
             }
 
-            return essayRepository.save(existingEssay);
+            Essay saved = essayRepository.save(existingEssay);
+
+            // 回收被移除文件的物理文件（仅本站 blog/essay/ 下的文件，外链跳过）
+            if (!removedFileUrls.isEmpty()) {
+                try {
+                    adminFileService.deleteEssayFiles(removedFileUrls);
+                } catch (Exception fileEx) {
+                    logger.warn("回收随笔被移除文件失败，随笔ID: {}", id, fileEx);
+                }
+            }
+
+            return saved;
         } catch (EntityNotFoundException e) {
             throw e; // 保留原始业务异常
         } catch (Exception e) {
