@@ -1,10 +1,10 @@
 'use client'
 
 import { useMemo } from 'react'
-import { FileImage, FileVideo, FileText, FileCode } from 'lucide-react'
+import { FileText, FileCode } from 'lucide-react'
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
-import { getFileType, getFileName } from '../utils'
+import { getFileName } from '../utils'
 import type { Essay, FileType } from '../types'
 
 // 动态导入 ReactPlayer 避免 SSR 问题
@@ -13,25 +13,16 @@ const ReactPlayer = dynamic(() => import('react-player'), { ssr: false })
 interface FileGalleryProps {
   essay: Essay
   isMobile: boolean
-  openFile: (url: string) => void
-}
-
-interface FileItem {
-  url: string
-  type: FileType
+  openFile: (url: string, type?: FileType) => void
 }
 
 const MAX_DISPLAY_ITEMS = 9 // 最大直接展示数量
 
-const getFileIcon = (type: FileType, fileName: string) => {
-  if (type === 'image') return <FileImage className="h-4 w-4" />
-  if (type === 'video') return <FileVideo className="h-4 w-4" />
-
-  if (fileName.endsWith('.pdf')) return <FileText className="h-4 w-4" />
-  if (fileName.endsWith('.doc') || fileName.endsWith('.docx')) return <FileText className="h-4 w-4" />
-  if (fileName.endsWith('.ppt') || fileName.endsWith('.pptx')) return <FileText className="h-4 w-4" />
-  if (fileName.endsWith('.md') || fileName.endsWith('.txt')) return <FileCode className="h-4 w-4" />
-
+const getFileIcon = (fileName: string) => {
+  const lower = fileName.toLowerCase()
+  if (lower.endsWith('.md') || lower.endsWith('.txt') || lower.endsWith('.json')) {
+    return <FileCode className="h-4 w-4" />
+  }
   return <FileText className="h-4 w-4" />
 }
 
@@ -119,20 +110,12 @@ const VideoItem = ({
 }
 
 export function FileGallery({ essay, isMobile, openFile }: FileGalleryProps) {
-  // 合并所有文件
-  const allFiles = useMemo<FileItem[]>(() => {
-    const files: FileItem[] = [
-      ...(essay.fileList?.Images.map(url => ({ url, type: 'image' as FileType })) || []),
-      ...(essay.fileList?.Videos.map(url => ({ url, type: 'video' as FileType })) || []),
-      ...(essay.fileList?.Texts.map(url => ({ url, type: 'text' as FileType })) || [])
-    ]
-    return files
-  }, [essay.fileList])
+  // 按存储顺序展示：媒体（图片/视频混排）+ 文档/其他文件
+  const mediaFiles = useMemo(() => essay.fileList?.Media || [], [essay.fileList])
+  const docFiles = useMemo(() => essay.fileList?.Files || [], [essay.fileList])
 
-  if (allFiles.length === 0) return null
+  if (mediaFiles.length === 0 && docFiles.length === 0) return null
 
-  const textFiles = allFiles.filter(file => file.type === 'text')
-  const mediaFiles = allFiles.filter(file => file.type !== 'text')
   const mediaCount = mediaFiles.length
 
   // 计算网格列数和图片最大高度
@@ -162,13 +145,13 @@ export function FileGallery({ essay, isMobile, openFile }: FileGalleryProps) {
                 <ImageItem
                   url={file.url}
                   index={index}
-                  onClick={() => openFile(file.url)}
+                  onClick={() => openFile(file.url, 'image')}
                   maxHeight={imageMaxHeight}
                 />
               ) : (
                 <VideoItem
                   url={file.url}
-                  onClick={() => openFile(file.url)}
+                  onClick={() => openFile(file.url, 'video')}
                   maxHeight={imageMaxHeight}
                 />
               )}
@@ -176,7 +159,7 @@ export function FileGallery({ essay, isMobile, openFile }: FileGalleryProps) {
               {index === MAX_DISPLAY_ITEMS - 1 && hasMoreMedia && (
                 <div
                   className="absolute inset-0 bg-[rgb(var(--overlay))]/50 flex items-center justify-center cursor-pointer"
-                  onClick={() => openFile(file.url)}
+                  onClick={() => openFile(file.url, file.type)}
                 >
                   <span className="text-white text-2xl font-bold">+{remainingMediaCount}</span>
                 </div>
@@ -186,30 +169,30 @@ export function FileGallery({ essay, isMobile, openFile }: FileGalleryProps) {
         </div>
       )}
 
-      {/* 文本文件 - 紧凑平铺布局 */}
-      {textFiles.length > 0 && (
+      {/* 文档及其他文件 - 紧凑平铺布局 */}
+      {docFiles.length > 0 && (
         <div
           className="grid overflow-hidden"
           style={{
             gridTemplateColumns: isMobile
               ? '1fr'
-              : textFiles.length === 1
+              : docFiles.length === 1
                 ? '1fr'
-                : textFiles.length === 2
+                : docFiles.length === 2
                   ? 'repeat(2, 1fr)'
                   : 'repeat(3, 1fr)',
             gap: 0
           }}
         >
-          {textFiles.map((file, index) => (
+          {docFiles.map((file, index) => (
             <div
-              key={`text-${index}`}
-              onClick={() => openFile(file.url)}
+              key={`doc-${index}`}
+              onClick={() => openFile(file.url, file.type)}
               className="bg-[rgb(var(--muted))] flex items-center gap-2 cursor-pointer hover:bg-[rgb(var(--muted)/0.85)] transition-colors overflow-hidden p-2"
               style={{ minHeight: '44px' }}
             >
               <div className="text-[rgb(var(--primary))] p-1 bg-[rgb(var(--primary)/0.1)] rounded shrink-0">
-                {getFileIcon('text', file.url)}
+                {getFileIcon(file.url)}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-medium text-[rgb(var(--card-foreground))] truncate leading-tight">

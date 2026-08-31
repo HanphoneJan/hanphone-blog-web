@@ -11,6 +11,7 @@ interface FileUploadProps {
   onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void
   onOpenDeleteModal: (index: number, isLocal: boolean, fileName: string, id?: number) => void
   onAddUrl: (url: string) => boolean
+  onMove: (index: number, isLocal: boolean, direction: 'up' | 'down') => void
 }
 
 export function FileUpload({
@@ -18,7 +19,8 @@ export function FileUpload({
   uploadedFiles,
   onFileSelect,
   onOpenDeleteModal,
-  onAddUrl
+  onAddUrl,
+  onMove
 }: FileUploadProps) {
   const [urlInput, setUrlInput] = useState('')
   const totalCount = localFiles.length + uploadedFiles.length
@@ -91,6 +93,9 @@ export function FileUpload({
             isLocal={true}
             index={index}
             onDelete={onOpenDeleteModal}
+            onMove={onMove}
+            canMoveUp={index > 0}
+            canMoveDown={index < localFiles.length - 1}
           />
         ))}
 
@@ -102,6 +107,9 @@ export function FileUpload({
             isLocal={false}
             index={index}
             onDelete={onOpenDeleteModal}
+            onMove={onMove}
+            canMoveUp={index > 0}
+            canMoveDown={index < uploadedFiles.length - 1}
           />
         ))}
       </div>

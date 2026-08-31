@@ -850,7 +850,9 @@ function FileRow({ node }: { node: TreeNode }) {
       <span className="flex-1 min-w-0 text-sm text-[rgb(var(--text))] truncate group-hover:text-[rgb(var(--primary))] transition-colors flex items-center gap-1.5">
         {name}
         {doc.recommend && (
-          <Star className="w-3 h-3 text-yellow-500 fill-yellow-500 shrink-0" title="推荐文件" />
+          <span title="推荐文件" className="flex shrink-0">
+            <Star className="w-3 h-3 text-yellow-500 fill-yellow-500 shrink-0" />
+          </span>
         )}
       </span>
       <span

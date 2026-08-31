@@ -16,6 +16,7 @@ interface EssayFormProps {
   onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void
   onOpenFileDeleteModal: (index: number, isLocal: boolean, fileName: string, id?: number) => void
   onAddUrl: (url: string) => boolean
+  onMoveFile: (index: number, isLocal: boolean, direction: 'up' | 'down') => void
   onPublish: () => void
 }
 
@@ -30,6 +31,7 @@ export function EssayForm({
   onFileSelect,
   onOpenFileDeleteModal,
   onAddUrl,
+  onMoveFile,
   onPublish
 }: EssayFormProps) {
   const isUploading = uploadProgress !== null
@@ -91,6 +93,7 @@ export function EssayForm({
         onFileSelect={onFileSelect}
         onOpenDeleteModal={onOpenFileDeleteModal}
         onAddUrl={onAddUrl}
+        onMove={onMoveFile}
       />
 
       {/* 发布按钮 */}

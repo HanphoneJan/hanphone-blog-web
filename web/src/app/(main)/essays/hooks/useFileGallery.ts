@@ -12,18 +12,21 @@ export function useFileGallery() {
   }>({ visible: false, url: '', type: 'image' })
 
   // 打开文件
-  const openFile = useCallback((url: string) => {
-    const fileType = getFileType(url)
+  const openFile = useCallback((url: string, fileType?: FileType) => {
+    const type = fileType ?? getFileType(url)
 
-    if (fileType === 'text') {
+    if (type === 'text') {
       const a = document.createElement('a')
       a.href = url
       a.download = getFileName(url)
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
-    } else if (fileType === 'image') {
-      setZoomData({ visible: true, url, type: fileType })
+    } else if (type === 'image') {
+      setZoomData({ visible: true, url, type })
+    } else if (type === 'other') {
+      // 无法识别类型的文件在新窗口打开
+      window.open(url, '_blank', 'noopener')
     }
   }, [])
 

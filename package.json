@@ -2,6 +2,12 @@
   "name": "hanphone-blog-workspace",
   "private": true,
   "packageManager": "pnpm@10.33.2",
+  "pnpm": {
+    "overrides": {
+      "@types/react": "^18.3.0",
+      "@types/react-dom": "^18.3.0"
+    }
+  },
   "scripts": {
     "install:all": "pnpm install",
     "build:web": "pnpm --filter web build",

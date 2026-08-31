@@ -4,7 +4,7 @@ import { useCallback, useRef, useReducer, useMemo } from 'react'
 import { ENDPOINTS } from '@/lib/api'
 import apiClient from '@/lib/utils'
 import { essayReducer } from '../utils'
-import type { Essay, ApiEssay, UserInfo } from '../types'
+import type { Essay, ApiEssay, UserInfo, FileType } from '../types'
 
 const CACHE_DURATION = 5 * 60 * 1000 // 5分钟缓存
 
@@ -90,13 +90,17 @@ export function useEssays(userInfo: UserInfo | null, options: UseEssaysOptions =
         isLiked: item.liked || false,
         comments,
         commentCount: (item.essayComments || []).length,
+        // 保持后端返回的存储顺序：媒体（图片/视频）进网格，文档及其他进文件卡片
         fileList: item.essayFileUrls?.length
           ? {
-              Images: item.essayFileUrls.filter(f => f.urlType === 'IMAGE').map(f => f.url),
-              Videos: item.essayFileUrls.filter(f => f.urlType === 'VIDEO').map(f => f.url),
-              Texts: item.essayFileUrls.filter(f => f.urlType === 'TEXT').map(f => f.url)
+              Media: item.essayFileUrls
+                .filter(f => f.urlType === 'IMAGE' || f.urlType === 'VIDEO')
+                .map(f => ({ url: f.url, type: (f.urlType === 'VIDEO' ? 'video' : 'image') as FileType })),
+              Files: item.essayFileUrls
+                .filter(f => f.urlType === 'TEXT' || f.urlType === 'OTHER')
+                .map(f => ({ url: f.url, type: (f.urlType === 'OTHER' ? 'other' : 'text') as FileType }))
             }
-          : { Images: [], Videos: [], Texts: [] },
+          : { Media: [], Files: [] },
         recommend: item.recommend || false
       }
     })

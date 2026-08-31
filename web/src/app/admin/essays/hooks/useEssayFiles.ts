@@ -68,6 +68,17 @@ export function useEssayFiles(
     setLocalFiles(prev => prev.filter((_, i) => i !== index))
   }, [])
 
+  // 上移/下移本地文件（控制上传后的追加顺序）
+  const moveLocalFile = useCallback((index: number, direction: 'up' | 'down') => {
+    setLocalFiles(prev => {
+      const target = direction === 'up' ? index - 1 : index + 1
+      if (target < 0 || target >= prev.length) return prev
+      const next = [...prev]
+      ;[next[index], next[target]] = [next[target], next[index]]
+      return next
+    })
+  }, [])
+
   // 从文件服务器删除物理文件（仅本站托管文件）
   const deletePhysicalFile = useCallback(async (url: string): Promise<boolean> => {
     if (!isInternalFileUrl(url)) return true
@@ -199,6 +210,7 @@ export function useEssayFiles(
     closeFileDeleteModal,
     confirmFileDelete,
     removeLocalFile,
+    moveLocalFile,
     uploadAllFiles,
     clearLocalFiles
   }

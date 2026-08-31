@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { X, Link2 } from 'lucide-react'
+import { X, Link2, ChevronUp, ChevronDown } from 'lucide-react'
 import type { EssayFile, FileInfo } from '../types'
 import { getFileIconByType, getFileName, isInternalFileUrl } from '../utils'
 
@@ -10,9 +10,43 @@ interface FilePreviewProps {
   isLocal: boolean
   index: number
   onDelete: (index: number, isLocal: boolean, fileName: string, id?: number) => void
+  onMove: (index: number, isLocal: boolean, direction: 'up' | 'down') => void
+  canMoveUp: boolean
+  canMoveDown: boolean
 }
 
-export function FilePreview({ file, isLocal, index, onDelete }: FilePreviewProps) {
+export function FilePreview({ file, isLocal, index, onDelete, onMove, canMoveUp, canMoveDown }: FilePreviewProps) {
+  const renderMoveButtons = () => (
+    <div className="absolute top-1 left-1 z-10 flex flex-col gap-0.5">
+      {canMoveUp && (
+        <button
+          type="button"
+          onClick={e => {
+            e.stopPropagation()
+            onMove(index, isLocal, 'up')
+          }}
+          className="bg-black/50 hover:bg-black/70 text-white rounded p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+          aria-label="上移"
+        >
+          <ChevronUp className="h-3.5 w-3.5" />
+        </button>
+      )}
+      {canMoveDown && (
+        <button
+          type="button"
+          onClick={e => {
+            e.stopPropagation()
+            onMove(index, isLocal, 'down')
+          }}
+          className="bg-black/50 hover:bg-black/70 text-white rounded p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+          aria-label="下移"
+        >
+          <ChevronDown className="h-3.5 w-3.5" />
+        </button>
+      )}
+    </div>
+  )
+
   if (isLocal) {
     const localFile = file as FileInfo
     const FileIcon = getFileIconByType(localFile.type, localFile.file.name)
@@ -46,6 +80,7 @@ export function FilePreview({ file, isLocal, index, onDelete }: FilePreviewProps
         <div className="absolute top-1 right-1 bg-blue-500/80 text-white text-xs px-1 rounded">
           待上传
         </div>
+        {renderMoveButtons()}
         <button
           type="button"
           onClick={() => onDelete(index, true, localFile.file.name)}
@@ -95,6 +130,7 @@ export function FilePreview({ file, isLocal, index, onDelete }: FilePreviewProps
           外链
         </div>
       )}
+      {renderMoveButtons()}
       <button
         type="button"
         onClick={() => onDelete(index, false, fileName, uploadedFile.id)}

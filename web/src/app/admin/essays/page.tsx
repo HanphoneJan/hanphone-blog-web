@@ -85,6 +85,7 @@ export default function EssayManagementPage() {
     setEditEssay,
     resetForm,
     removeUploadedFile,
+    moveUploadedFile,
     addUrlFile,
     validateForm,
     prepareEssayData
@@ -99,9 +100,19 @@ export default function EssayManagementPage() {
     openFileDeleteModal,
     closeFileDeleteModal,
     confirmFileDelete,
+    moveLocalFile,
     uploadAllFiles,
     clearLocalFiles
   } = useEssayFiles(fetchData)
+
+  // 文件上移/下移（本地列表与已上传列表各自组内移动）
+  const handleFileMove = useCallback((index: number, isLocal: boolean, direction: 'up' | 'down') => {
+    if (isLocal) {
+      moveLocalFile(index, direction)
+    } else {
+      moveUploadedFile(index, direction)
+    }
+  }, [moveLocalFile, moveUploadedFile])
 
   // 切换标签页
   const handleTabChange = useCallback((key: string) => {
@@ -259,6 +270,7 @@ export default function EssayManagementPage() {
               onFileSelect={handleFileSelect}
               onOpenFileDeleteModal={openFileDeleteModal}
               onAddUrl={addUrlFile}
+              onMoveFile={handleFileMove}
               onPublish={handlePublish}
             />
           </motion.div>

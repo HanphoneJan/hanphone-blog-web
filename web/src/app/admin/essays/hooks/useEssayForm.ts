@@ -69,6 +69,19 @@ export function useEssayForm() {
     }))
   }, [])
 
+  // 上移/下移已上传文件（控制保存后的持久化顺序）
+  const moveUploadedFile = useCallback((index: number, direction: 'up' | 'down') => {
+    setEssay(prev => {
+      const files = prev.essayFileUrls
+      if (!files) return prev
+      const target = direction === 'up' ? index - 1 : index + 1
+      if (target < 0 || target >= files.length) return prev
+      const next = [...files]
+      ;[next[index], next[target]] = [next[target], next[index]]
+      return { ...prev, essayFileUrls: next }
+    })
+  }, [])
+
   // 直接添加文件URL（支持外链或本站文件地址）
   const addUrlFile = useCallback((url: string): boolean => {
     const trimmed = url.trim()
@@ -135,6 +148,7 @@ export function useEssayForm() {
     resetForm,
     setUploadedFiles,
     removeUploadedFile,
+    moveUploadedFile,
     addUrlFile,
     validateForm,
     prepareEssayData

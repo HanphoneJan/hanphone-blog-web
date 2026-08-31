@@ -1,18 +1,23 @@
 // 文件类型
-type FileType = 'image' | 'video' | 'text'
+type FileType = 'image' | 'video' | 'text' | 'other'
 
-// 文件列表接口
+// 画廊文件项（url + 展示类型）
+interface GalleryFile {
+  url: string
+  type: FileType
+}
+
+// 文件列表接口：Media 为图片/视频（按存储顺序，可混排），Files 为文档及其他文件（按存储顺序）
 interface FileList {
-  Images: string[]
-  Videos: string[]
-  Texts: string[]
+  Media: GalleryFile[]
+  Files: GalleryFile[]
 }
 
 // API返回的文件接口
 interface EssayFileUrl {
   id: number
   url: string
-  urlType: 'IMAGE' | 'VIDEO' | 'TEXT'
+  urlType: 'IMAGE' | 'VIDEO' | 'TEXT' | 'OTHER'
   urlDesc?: string | null
   isValid: boolean
   createTime: string
@@ -128,6 +133,7 @@ type EssayAction =
 
 export type {
   FileType,
+  GalleryFile,
   FileList,
   EssayFileUrl,
   Comment,
