@@ -61,3 +61,7 @@ __pycache__
 .gstack/
 superpowers/
 .codegraph/
+
+# Craft workflow (runtime state; assets live in gitignored .claude/ .opencode/ .agents/)
+.craft/
+.agents/
