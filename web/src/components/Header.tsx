@@ -796,7 +796,11 @@ const Header: React.FC = () => {
                         <span className="ml-1.5 font-medium text-sm hidden min-[1100px]:inline">{item.authName}</span>
                         <ChevronDown className="w-3 h-3 ml-0.5 hidden min-[1100px]:inline opacity-70" />
                       </button>
-                      <div className="absolute top-full left-0 mt-1 py-1.5 px-1.5 rounded-xl bg-[rgb(var(--bg))] border border-[rgb(var(--border))] shadow-xl opacity-0 invisible -translate-y-1 scale-[0.97] transition-all duration-200 ease-out group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:scale-100 min-w-[140px] z-50 origin-top-left">
+                      <div className={`absolute top-full left-0 mt-1 py-1.5 px-1.5 rounded-xl opacity-0 invisible -translate-y-1 scale-[0.97] transition-all duration-200 ease-out group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:scale-100 min-w-[140px] z-50 origin-top-left ${
+                        isTransparent
+                          ? 'bg-transparent border-0 shadow-none'
+                          : 'bg-[rgb(var(--bg))] border border-[rgb(var(--border))] shadow-xl'
+                      }`}>
                         {item.children!.map((child, childIndex) => {
                           const childActive = activeIndex === `/${child.path}`
                           return (
@@ -810,7 +814,9 @@ const Header: React.FC = () => {
                               className={`flex items-center w-full px-3 py-2 rounded-lg text-sm transition-none whitespace-nowrap ${
                                 childActive
                                   ? 'bg-[rgb(var(--primary)/0.12)] text-[rgb(var(--primary))] font-medium'
-                                  : 'text-[rgb(var(--text))] hover:bg-[rgb(var(--hover))]'
+                                  : isTransparent
+                                    ? 'text-white hover:bg-[rgb(var(--bg)/0.15)]'
+                                    : 'text-[rgb(var(--text))] hover:bg-[rgb(var(--hover))]'
                               }`}
                             >
                               {getMenuIcon(child.id)}
