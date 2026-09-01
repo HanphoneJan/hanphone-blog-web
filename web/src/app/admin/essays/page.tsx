@@ -350,9 +350,9 @@ export default function EssayManagementPage() {
         </motion.div>
       </main>
 
-      {/* 删除确认对话框 */}
-      <AnimatePresence>
-        {deleteModalVisible &&
+      {/* 删除确认对话框（createPortal 返回 portal 节点而非 React element，
+          不能作为 AnimatePresence 子元素——会被 isValidElement 过滤导致弹窗永不渲染） */}
+      {deleteModalVisible &&
           createPortal(
             <motion.div
               initial={{ opacity: 0 }}
@@ -391,11 +391,9 @@ export default function EssayManagementPage() {
             </motion.div>,
             document.body
           )}
-      </AnimatePresence>
 
-      {/* 文件删除确认对话框 */}
-      <AnimatePresence>
-        {deleteFileModalVisible &&
+      {/* 文件删除确认对话框（同上，portal 不能放进 AnimatePresence） */}
+      {deleteFileModalVisible &&
           createPortal(
             <motion.div
               initial={{ opacity: 0 }}
@@ -438,7 +436,6 @@ export default function EssayManagementPage() {
             </motion.div>,
             document.body
           )}
-      </AnimatePresence>
     </motion.div>
   )
 }
