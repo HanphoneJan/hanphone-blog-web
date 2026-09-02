@@ -1,4 +1,7 @@
 import type { Metadata, Viewport } from 'next'
+import '@fontsource/noto-serif-sc/400.css'
+import '@fontsource/noto-serif-sc/500.css'
+import '@fontsource/noto-serif-sc/700.css'
 import { UserProvider } from '@/contexts/UserContext'
 import { ThemeProvider } from '@/contexts/ThemeProvider'
 import './globals.css'
