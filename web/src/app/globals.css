@@ -19,7 +19,7 @@
 :root {
   /* 字体栈 */
   /* 衬线字体 */
-  --font-body: "Times New Roman", Georgia, "Noto Serif SC", "Songti SC", SimSun, serif;
+  --font-body: "Times New Roman", Georgia, "Noto Serif SC", "Noto Serif CJK SC", "Source Han Serif SC", "Source Han Serif CN", "Songti SC", SimSun, serif;
   /* 无衬线 */
   --vp-font: -apple-system, BlinkMacSystemFont, "Microsoft YaHei", sans-serif;
 

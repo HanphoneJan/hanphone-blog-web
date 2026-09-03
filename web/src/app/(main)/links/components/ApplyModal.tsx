@@ -221,7 +221,7 @@ export default function ApplyModal({ isOpen, onClose, defaultTab = 'copy' }: App
         <div className="p-6 border-b-2 border-[rgb(var(--text))]">
           <div className="flex items-center gap-3">
             <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[16px] border-b-[rgb(var(--primary))]" />
-            <h3 className="text-xl font-black" style={{ fontFamily: 'system-ui, sans-serif' }}>
+            <h3 className="text-xl font-black" style={{ fontFamily: 'var(--font-body)' }}>
               {activeTab === 'copy' ? '友链信息' : '申请友链'}
             </h3>
           </div>

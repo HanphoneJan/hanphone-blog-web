@@ -13,6 +13,7 @@ export function HeroSection() {
   const [bgImage, setBgImage] = useState<string>(ASSETS.BACKGROUND_WEBP)
   const [subtitleText, setSubtitleText] = useState('')
   const [showCursor, setShowCursor] = useState(false)
+  const [fontsReady, setFontsReady] = useState(false)
 
   // 加载用户设置的背景图片
   useEffect(() => {
@@ -41,8 +42,28 @@ export function HeroSection() {
     return () => window.removeEventListener('blog-bg-change', handler)
   }, [])
 
+  useEffect(() => {
+    if (!document.fonts) {
+      setFontsReady(true)
+      return
+    }
+    let cancelled = false
+    const load = Promise.all([
+      document.fonts.load('900 4rem "Noto Serif SC"', '云林有风'),
+      document.fonts.load('400 1rem "Noto Serif SC"', '欢迎来到寒枫的博客……')
+    ]).catch(() => {})
+    const timeout = new Promise<void>(resolve => setTimeout(resolve, 1500))
+    Promise.race([load, timeout]).then(() => {
+      if (!cancelled) setFontsReady(true)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   // 逐字拆分标题动画 + 副标题打字机效果
   useEffect(() => {
+    if (!fontsReady) return
     const heroTitle = titleRef.current
     if (!heroTitle) return
     const titleText = heroTitle.textContent || ""
@@ -101,7 +122,7 @@ export function HeroSection() {
       mountedRef.current = false
       clearTimeout(timeoutId)
     }
-  }, [])
+  }, [fontsReady])
 
   // 视差滚动效果
 const updateParallax = useCallback(() => {
@@ -239,7 +260,7 @@ const updateParallax = useCallback(() => {
       <div className="hero-overlay" />
 
       {/* 英雄区内容 */}
-      <div className="hero-content">
+      <div className="hero-content" style={{ visibility: fontsReady ? 'visible' : 'hidden' }}>
         <h1 className="hero-title" ref={titleRef}>
           {`云林有风`}
         </h1>

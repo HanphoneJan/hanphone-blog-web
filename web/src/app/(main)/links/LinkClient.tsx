@@ -205,7 +205,7 @@ const BrutalistFriendCard = ({
             className="text-center font-bold text-sm truncate tracking-tight"
             style={{
               color: link.color || 'rgb(var(--text))',
-              fontFamily: 'system-ui, -apple-system, sans-serif'
+              fontFamily: 'var(--font-body)'
             }}
           >
             {link.name}
@@ -269,7 +269,7 @@ const BrutalistGallery = ({ links, fetchingUrls }: { links: FriendLink[]; fetchi
           <div className="w-3 h-3 bg-[rgb(var(--primary))] rotate-45" />
           <h2
             className="text-2xl font-black tracking-wider"
-            style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+            style={{ fontFamily: 'var(--font-body)' }}
           >
             友链
           </h2>
@@ -329,7 +329,7 @@ const BrutalistTitle = ({ onApply }: { onApply: () => void }) => {
             <h1
               className="text-5xl md:text-7xl font-black tracking-tighter mb-2"
               style={{
-                fontFamily: 'system-ui, -apple-system, sans-serif',
+                fontFamily: 'var(--font-body)',
                 lineHeight: 1,
                 color: 'rgb(var(--text))'
               }}
@@ -340,7 +340,7 @@ const BrutalistTitle = ({ onApply }: { onApply: () => void }) => {
               <div className="h-1 w-16 bg-[rgb(var(--primary))]" />
               <span
                 className="text-sm font-bold tracking-widest opacity-70"
-                style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+                style={{ fontFamily: 'var(--font-body)' }}
               >
                 FRIEND CIRCLE
               </span>
@@ -457,7 +457,7 @@ const BrutalistToolCard = ({
             <div className="flex-1 min-w-0">
               <h3
                 className="font-black text-sm uppercase truncate mb-1"
-                style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+                style={{ fontFamily: 'var(--font-body)' }}
               >
                 {link.name}
               </h3>
@@ -648,7 +648,7 @@ const SectionTitle = ({ title, count, icon }: { title: string; count: number; ic
     <span className="text-2xl">{icon}</span>
     <h2
       className="text-xl font-black tracking-wider"
-      style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+      style={{ fontFamily: 'var(--font-body)' }}
     >
       {title}
     </h2>
