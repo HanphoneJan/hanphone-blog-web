@@ -299,13 +299,16 @@ const Header: React.FC = () => {
 
   // 路由跳转前添加退场动画 - 修复当前路由导航bug
   const navigateWithTransition = (url: string) => {
-    // 关键修复：检查目标路由是否与当前路由相同
-    const normalizedCurrentPath = pathname === '/' ? '' : pathname
-    const normalizedTargetPath = url
+    // 归一化后比较：usePathname 带尾斜杠（如 /about/），菜单目标不带（/about），根路径为 /
+    // 若不归一化，同页导航会走进退场分支：.exit 类被添加后，push 被 Next 去重、
+    // 页面不重挂载，.exit 无人移除，页面停留在 fadeOut 后的不可见状态
+    const normalizePath = (p: string) => {
+      const trimmed = p.replace(/\/+$/, '')
+      return trimmed === '' ? '/' : trimmed
+    }
 
-    // 如果导航到当前页面，不执行动画和跳转
-    if (normalizedCurrentPath === normalizedTargetPath) {
-      // 可以添加滚动到顶部的行为
+    // 如果导航到当前页面，不执行动画和跳转，仅回到顶部
+    if (normalizePath(pathname) === normalizePath(url)) {
       window.scrollTo({ top: 0, behavior: 'smooth' })
       return
     }
