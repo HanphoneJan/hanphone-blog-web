@@ -322,6 +322,12 @@ export default function DocDetailClient({ docId, docList, initialDoc }: DocDetai
   const scrollDirRef = useRef<'up' | 'down'>('up')
   const [fabVisible, setFabVisible] = useState(true)
 
+  // 切换文档时重置阅读区滚动
+  // Next.js 路由只重置 window 滚动，不会重置内部 overflow-y-auto 容器
+  useEffect(() => {
+    contentRef.current?.scrollTo({ top: 0, left: 0 })
+  }, [docId])
+
   const tree = useMemo(() => buildTree(docList), [docList])
 
   // 获取当前文件的 meta

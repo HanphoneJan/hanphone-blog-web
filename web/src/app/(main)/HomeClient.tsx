@@ -95,11 +95,6 @@ export default function HomeClient({
   initialProjects,
   initialSiteStats
 }: HomeClientProps) {
-  // 页面加载时滚动到顶部
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [])
-
   // 缓存
   const { getFromCache, setCache } = useHomeCache()
 

@@ -1,7 +1,7 @@
 'use client'
 
 import BgOverlay from '@/app/(main)/components/BgOverlay'
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import {
   ChevronLeft,
@@ -18,6 +18,7 @@ import {
 , API_CODE } from '@/lib/constants'
 import { BLOG_LABELS } from '@/lib/labels'
 import { ENDPOINTS } from '@/lib/api'
+import { scrollToTopOf } from '@/lib/scroll'
 import { ArticleRow } from './components/ArticleRow'
 import { BlogCategoryTree } from './components/BlogCategoryTree'
 import { BlogFilterPanel } from './components/BlogFilterPanel'
@@ -46,9 +47,8 @@ export default function BlogListClient({
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [])
+  // 中间内容列：桌面端唯一滚动容器（window 在该布局下不滚动）
+  const middleColumnRef = useRef<HTMLDivElement>(null)
 
   const [blogList, setBlogList] = useState<Blog[]>(initialBlogs)
   const [typeList, setTypeList] = useState<Type[]>(initialTypes)
@@ -270,6 +270,8 @@ export default function BlogListClient({
     }
     const url = typeId ? ROUTES.BLOG_LIST_WITH_TYPE(typeId) : ROUTES.BLOG_LIST
     router.push(url)
+    // 仅变 query 的导航不会重挂载页面，需显式重置内部滚动容器
+    scrollToTopOf(middleColumnRef.current)
     setMobileNavOpen(false)
   }
 
@@ -280,6 +282,7 @@ export default function BlogListClient({
     setPageInfo(prev => ({ ...prev, current: 1 }))
     const url = tagId ? `${ROUTES.BLOG_LIST}?tagId=${tagId}` : ROUTES.BLOG_LIST
     router.push(url)
+    scrollToTopOf(middleColumnRef.current)
     setMobileFilterOpen(false)
   }
 
@@ -290,6 +293,7 @@ export default function BlogListClient({
     setPageInfo(prev => ({ ...prev, current: 1 }))
     const url = year ? `${ROUTES.BLOG_LIST}?year=${year}` : ROUTES.BLOG_LIST
     router.push(url)
+    scrollToTopOf(middleColumnRef.current)
     setMobileFilterOpen(false)
   }
 
@@ -315,6 +319,7 @@ export default function BlogListClient({
     setSelectedYear(null)
     setPageInfo(prev => ({ ...prev, current: 1 }))
     router.push(ROUTES.BLOG_LIST)
+    scrollToTopOf(middleColumnRef.current)
     setMobileNavOpen(false)
     setMobileFilterOpen(false)
   }
@@ -324,7 +329,8 @@ export default function BlogListClient({
       setPageInfo(prev => ({ ...prev, current: newPage }))
       setInputPage(newPage)
       fetchBlogList(newPage)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      // 桌面端滚动发生在中间列容器内，window.scrollTo 对其无效
+      scrollToTopOf(middleColumnRef.current)
     }
   }
 
@@ -390,7 +396,7 @@ export default function BlogListClient({
           )}
 
           {/* 中间内容区 */}
-          <div className="min-w-0 lg:overflow-y-auto lg:blog-page-scrollbar lg:px-2">
+          <div ref={middleColumnRef} className="min-w-0 lg:overflow-y-auto lg:blog-page-scrollbar lg:px-2">
             {/* 顶部工具栏 */}
             <div className="flex items-center justify-between mb-6">
               {/* 移动端布局 */}

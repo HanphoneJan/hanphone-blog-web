@@ -64,28 +64,28 @@ export function useToc({ content, headerHeight, dispatch }: UseTocOptions) {
     }
   }, [headerHeight, dispatch])
 
-  // 处理哈希跳转 - 在中间内容区域内滚动
+  // 处理哈希跳转 / 内容变化时的滚动重置 - 在中间内容区域内滚动
+  // 注意：Next.js 路由只重置 window 滚动，正文滚动发生在内部容器中，
+  // 切换文章时必须显式重置，否则新文章会停留在上一篇文章的滚动位置
   useEffect(() => {
-    if (typeof window !== 'undefined' && content && !isHashHandledRef.current && blogContentRef.current) {
-      const hash = window.location.hash
-      if (hash) {
-        const targetId = decodeURIComponent(hash.slice(1))
-        const element = document.getElementById(targetId)
-        if (element) {
-          setTimeout(() => {
-            // 使用 scrollToHeading 但不更新 hash（避免重复替换）
-            scrollToHeading(targetId, false)
-            isHashHandledRef.current = true
-          }, 100)
-        } else {
+    if (typeof window === 'undefined' || !content || !blogContentRef.current) return
+
+    const hash = window.location.hash
+    if (hash && !isHashHandledRef.current) {
+      const targetId = decodeURIComponent(hash.slice(1))
+      if (document.getElementById(targetId)) {
+        setTimeout(() => {
+          // 使用 scrollToHeading 但不更新 hash（避免重复替换）
+          scrollToHeading(targetId, false)
           isHashHandledRef.current = true
-        }
-      } else {
-        // 无哈希时滚动到顶部
-        blogContentRef.current.scrollTo({ top: 0, left: 0, behavior: 'instant' })
-        isHashHandledRef.current = true
+        }, 100)
+        return
       }
+      isHashHandledRef.current = true
     }
+
+    // 无哈希（或哈希已处理/失效）时滚动到顶部
+    blogContentRef.current.scrollTo({ top: 0, left: 0, behavior: 'instant' })
   }, [content, headerHeight, scrollToHeading])
 
   // 监听URL变化
