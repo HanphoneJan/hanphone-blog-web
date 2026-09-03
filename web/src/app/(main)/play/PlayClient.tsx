@@ -227,7 +227,7 @@ export default function PlayClient({ initialProjects }: PlayClientProps) {
           <h1
             className="text-4xl sm:text-6xl font-light mb-4 tracking-tight"
             style={{
-              fontFamily: "'Poiret One', 'Noto Serif SC', serif",
+              fontFamily: "'Poiret One', 'Noto Serif SC Variable', serif",
               background: 'linear-gradient(135deg, #c084fc 0%, #f472b6 50%, #fb923c 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',

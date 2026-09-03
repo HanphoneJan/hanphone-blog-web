@@ -24,12 +24,12 @@
   },
   "dependencies": {
     "@emoji-mart/data": "^1.2.1",
+    "@fontsource-variable/noto-serif-sc": "^5.3.0",
     "@fontsource/caveat": "^5.2.8",
     "@fontsource/comic-neue": "^5.2.7",
     "@fontsource/indie-flower": "^5.2.7",
     "@fontsource/kalam": "^5.2.8",
     "@fontsource/ma-shan-zheng": "^5.2.9",
-    "@fontsource/noto-serif-sc": "^5.2.9",
     "@fortawesome/fontawesome-svg-core": "^7.0.0",
     "@fortawesome/free-brands-svg-icons": "^7.0.0",
     "@fortawesome/free-solid-svg-icons": "^7.0.0",

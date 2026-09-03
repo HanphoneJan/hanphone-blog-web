@@ -1,6 +1,6 @@
 import { defaultCache } from '@serwist/next/worker'
 import type { PrecacheEntry, RuntimeCaching, SerwistGlobalConfig } from 'serwist'
-import { ExpirationPlugin, NetworkFirst, NetworkOnly, Serwist } from 'serwist'
+import { CacheFirst, ExpirationPlugin, NetworkFirst, NetworkOnly, Serwist } from 'serwist'
 
 declare global {
   interface WorkerGlobalScope extends SerwistGlobalConfig {
@@ -30,6 +30,26 @@ const navigationRuntimeCache: RuntimeCaching = {
 }
 
 /**
+ * 字体运行时缓存（CacheFirst）：中文 Web 字体按 unicode-range 切成数百个小文件，
+ * 一旦下载过就永久走缓存，避免每次访问重新下载导致衬线/无衬线交替闪烁。
+ */
+const fontsRuntimeCache: RuntimeCaching = {
+  matcher: ({ request, sameOrigin, url }) =>
+    sameOrigin && request.destination === 'font' && /\.(?:woff2?|ttf|otf)$/i.test(url.pathname),
+  handler: new CacheFirst({
+    cacheName: 'webfonts',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 600,
+        maxAgeSeconds: 365 * 24 * 60 * 60,
+        maxAgeFrom: 'last-used',
+        purgeOnQuotaError: true
+      })
+    ]
+  })
+}
+
+/**
  * PWA 缓存策略：只缓存核心资源（HTML/JS/CSS/字体），不缓存图片/视频/大文件
  * 从 defaultCache 中过滤掉图片、音频、视频、Next.js 图片优化等资源
  */
@@ -50,7 +70,7 @@ const serwist = new Serwist({
   skipWaiting: true,
   clientsClaim: true,
   navigationPreload: true,
-  runtimeCaching: [navigationRuntimeCache, ...coreCache],
+  runtimeCaching: [navigationRuntimeCache, fontsRuntimeCache, ...coreCache],
   fallbacks: {
     entries: [
       {

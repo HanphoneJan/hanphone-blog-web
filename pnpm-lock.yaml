@@ -257,6 +257,9 @@ importers:
       '@emoji-mart/data':
         specifier: ^1.2.1
         version: 1.2.1
+      '@fontsource-variable/noto-serif-sc':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@fontsource/caveat':
         specifier: ^5.2.8
         version: 5.2.8
@@ -270,9 +273,6 @@ importers:
         specifier: ^5.2.8
         version: 5.2.8
       '@fontsource/ma-shan-zheng':
-        specifier: ^5.2.9
-        version: 5.2.9
-      '@fontsource/noto-serif-sc':
         specifier: ^5.2.9
         version: 5.2.9
       '@fortawesome/fontawesome-svg-core':
@@ -1905,6 +1905,9 @@ packages:
   '@floating-ui/utils@0.2.11':
     resolution: {integrity: sha512-RiB/yIh78pcIxl6lLMG0CgBXAZ2Y0eVHqMPYugu+9U0AeT6YBeiJpf7lbdJNIugFP5SIjwNRgo4DhR1Qxi26Gg==}
 
+  '@fontsource-variable/noto-serif-sc@5.3.0':
+    resolution: {integrity: sha512-7LcN2NEf4HDjoSkGWc79WqDDyMK8JvSPdA/gsHjJpZ8l9A9mcK/GQTazp3klmkBwJooy0eqeNvlmaZFXPupHrA==}
+
   '@fontsource/caveat@5.2.8':
     resolution: {integrity: sha512-9fUUfFE2IQFKbx+xOcaeQxxmh8iJguEb8z+j1PeueO4UUx+XfT4pRm/B04ZDvFA794/iRxY/IibmP8ZKtIf4rw==}
 
@@ -1919,9 +1922,6 @@ packages:
 
   '@fontsource/ma-shan-zheng@5.2.9':
     resolution: {integrity: sha512-5Pvpb5q6sq00/g+yLLE8iYWcsAqnoIqCloBsjN0bphkGWU3Wp3EfT0CgTsKOiLsPM8GN3AUP0ZaFM2/JR33C/g==}
-
-  '@fontsource/noto-serif-sc@5.2.9':
-    resolution: {integrity: sha512-+wosdNmyrtRjnqJ/4A6i99jApm6ye34n8Nh7jUO3P/+6Hd1ZBY1gB9yGaI5jVxb56RS1lM2kTc0DzX1ifRO2MA==}
 
   '@fortawesome/fontawesome-common-types@7.2.0':
     resolution: {integrity: sha512-IpR0bER9FY25p+e7BmFH25MZKEwFHTfRAfhOyJubgiDnoJNsSvJ7nigLraHtp4VOG/cy8D7uiV0dLkHOne5Fhw==}
@@ -12772,6 +12772,8 @@ snapshots:
 
   '@floating-ui/utils@0.2.11': {}
 
+  '@fontsource-variable/noto-serif-sc@5.3.0': {}
+
   '@fontsource/caveat@5.2.8': {}
 
   '@fontsource/comic-neue@5.2.7': {}
@@ -12781,8 +12783,6 @@ snapshots:
   '@fontsource/kalam@5.2.8': {}
 
   '@fontsource/ma-shan-zheng@5.2.9': {}
-
-  '@fontsource/noto-serif-sc@5.2.9': {}
 
   '@fortawesome/fontawesome-common-types@7.2.0': {}
 

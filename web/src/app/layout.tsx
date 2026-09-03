@@ -1,11 +1,8 @@
 import type { Metadata, Viewport } from 'next'
-import '@fontsource/noto-serif-sc/400.css'
-import '@fontsource/noto-serif-sc/500.css'
-import '@fontsource/noto-serif-sc/600.css'
-import '@fontsource/noto-serif-sc/700.css'
-import '@fontsource/noto-serif-sc/900.css'
+import '@fontsource-variable/noto-serif-sc'
 import { UserProvider } from '@/contexts/UserContext'
 import { ThemeProvider } from '@/contexts/ThemeProvider'
+import FontGate from '@/components/FontGate'
 import './globals.css'
 import { SITE_CONFIG, SITE_URL } from '@/lib/seo-config'
 
@@ -93,8 +90,11 @@ export default async function RootLayout({
   const backgroundImageUrl = '/background.webp'
   
   return (
-    <html lang={SITE_CONFIG.language} className={isDark ? 'dark' : ''}>
+    <html lang={SITE_CONFIG.language} className={isDark ? 'dark fonts-loading' : 'fonts-loading'}>
       <head>
+        <noscript>
+          <style>{'html.fonts-loading body,html.fonts-loading body *{color:inherit !important;-webkit-text-fill-color:initial !important}'}</style>
+        </noscript>
         <link 
           rel="preload" 
           href={backgroundImageUrl} 
@@ -108,6 +108,7 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-screen">
+        <FontGate />
         <ThemeProvider>
           <UserProvider>
             <main>{children}</main>

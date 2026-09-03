@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback, useState } from 'react'
 import { ASSETS, STORAGE_KEYS, HOME_CONFIG } from '@/lib/constants'
+import { isGateActive, whenGateSettled } from '@/lib/font-gate'
 import  BgOverlay  from './BgOverlay'
 
 export function HeroSection() {
@@ -13,7 +14,7 @@ export function HeroSection() {
   const [bgImage, setBgImage] = useState<string>(ASSETS.BACKGROUND_WEBP)
   const [subtitleText, setSubtitleText] = useState('')
   const [showCursor, setShowCursor] = useState(false)
-  const [fontsReady, setFontsReady] = useState(false)
+  const [fontsReady, setFontsReady] = useState(() => !isGateActive())
 
   // 加载用户设置的背景图片
   useEffect(() => {
@@ -42,24 +43,7 @@ export function HeroSection() {
     return () => window.removeEventListener('blog-bg-change', handler)
   }, [])
 
-  useEffect(() => {
-    if (!document.fonts) {
-      setFontsReady(true)
-      return
-    }
-    let cancelled = false
-    const load = Promise.all([
-      document.fonts.load('900 4rem "Noto Serif SC"', '云林有风'),
-      document.fonts.load('400 1rem "Noto Serif SC"', '欢迎来到寒枫的博客……')
-    ]).catch(() => {})
-    const timeout = new Promise<void>(resolve => setTimeout(resolve, 1500))
-    Promise.race([load, timeout]).then(() => {
-      if (!cancelled) setFontsReady(true)
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  useEffect(() => whenGateSettled(() => setFontsReady(true)), [])
 
   // 逐字拆分标题动画 + 副标题打字机效果
   useEffect(() => {
