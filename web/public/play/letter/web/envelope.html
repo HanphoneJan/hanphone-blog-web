@@ -32,7 +32,7 @@
             float: right;
             font-size: 2.8vh;
             font-weight: bold;
-            
+
         }
         .close:hover,
         .close:focus {
@@ -40,7 +40,7 @@
             text-decoration: none;
             cursor: pointer;
         }
-      
+
         .cover{
           pointer-events: none;
         }
@@ -142,19 +142,19 @@
 
     /**
      * 处理表单提交事件，发送用户输入的姓名和生日到服务器，并处理响应。
-     * 
+     *
      * @param {Event} event - 表单提交事件对象。
      * @listens form.onsubmit
-     * 
+     *
      * @function
-     * 
+     *
      * 当用户提交表单时，此函数会被触发。它首先阻止表单的默认提交行为，
      * 然后获取用户输入的姓名和生日。如果两者都存在，它会通过XMLHttpRequest
      * 发送一个POST请求到指定的URL，请求体为用户输入的数据的JSON字符串。
-     * 
+     *
      * 服务器响应后，如果状态码为200且请求已完成，它会解析响应文本为JSON，
      * 将其中的特定字段存入SessionStorage，并重定向用户到一个新的页面。
-     * 
+     *
      * 注意：此函数依赖于外部的form元素、modal元素以及sessionStorage对象。
      */
     form.onsubmit = function (event) {
@@ -163,7 +163,7 @@
       var birthday = document.getElementById("birthday").value;
       if (name && birthday) {
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "https://hanphone.cloud/letter/get", true);
+        xhr.open("POST", "https://docs.hanphone.cn/letter/get", true);
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhr.onreadystatechange = function () {
           if (xhr.readyState === 4 && xhr.status === 200) {
@@ -175,7 +175,7 @@
             sessionStorage.setItem('name', response.name);
             sessionStorage.setItem('nickname', response.nickname);
             modal.style.display = "none";
-            window.location.href = "https://hanphone.cloud/play/envelope/letter";
+            window.location.href = "https://docs.hanphone.cn/play/envelope/letter";
           }
           console.log("Reponse:", response.message); // 打印发送的内容
         };

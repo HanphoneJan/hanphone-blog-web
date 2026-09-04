@@ -65,7 +65,7 @@
         overflow-x: hidden;
         width: 100%;
     }
-    
+
     body {
         /* 确保body不超出视口宽度 */
         width: 100%;
@@ -137,13 +137,13 @@
                 -webkit-tap-highlight-color: rgba(255, 138, 171, 0.2);
             }
         }
-        
+
         @keyframes float {
             0% { transform: translateY(0px); }
             50% { transform: translateY(-20px); }
             100% { transform: translateY(0px); }
         }
-        
+
         @keyframes heartbeat {
             0% { transform: scale(1); }
             14% { transform: scale(1.1); }
@@ -151,29 +151,29 @@
             42% { transform: scale(1.1); }
             70% { transform: scale(1); }
         }
-        
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
-        
+
         @keyframes slideUp {
-            from { 
+            from {
                 opacity: 0;
                 transform: translateY(30px);
             }
-            to { 
+            to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-        
+
         @keyframes bloom {
             0% { transform: scale(0.8); opacity: 0; }
             70% { transform: scale(1.05); }
             100% { transform: scale(1); opacity: 1; }
         }
-        
+
         @keyframes envelope {
             0% { transform: scale(1); }
             50% { transform: scale(1.2) rotate(5deg); }
@@ -287,10 +287,10 @@
             <div id="clock-box"
                 class="bg-neutral-800/30 bg-blur-xl rounded-2xl p-4 md:p-8 mb-6 shadow-soft text-center opacity-0 transition-opacity duration-1200 animate-bloom overflow-x-auto scrollbar-hide">
                 <div class="flex md:flex-row items-center justify-center gap-2 md:gap-4 mb-4 md:mb-8">
-                    <a href="https://hanphone.cloud/" target="_blank"
+                    <a href="https://docs.hanphone.cn/" target="_blank"
                         class="text-love hover:text-love-dark transition-colors font-romantic text-[clamp(1.2rem,3vw,2rem)]">@寒枫</a>
                     <span class="text-neutral-100/70">与</span>
-                    <a href="https://hanphone.cloud/" target="_blank"
+                    <a href="https://docs.hanphone.cn/" target="_blank"
                         class="text-love hover:text-love-dark transition-colors font-romantic text-[clamp(1.2rem,3vw,2rem)]">@小七</a>
                     <span class="text-neutral-100/70">在一起的</span>
                 </div>
@@ -516,7 +516,7 @@
                 let contentHtml = `
                     <!-- 时间点 - 绝对定位确保始终在中线上 -->
                     <div class="absolute md:left-1/2 w-6 h-6 rounded-full ${dotColor} border-4 border-neutral-800 z-10 animate-pulse-slow transform md:-translate-x-1/2 top-1/2 -translate-y-1/2"></div>
-                    
+
                     <div class="flex flex-col md:flex-row items-start md:items-center">
                 `;
 
@@ -534,7 +534,7 @@
                             </div>
                             <p class="text-sm text-neutral-100/60 mt-2 text-left md:text-right">${item.date}</p>
                         </div>
-                        
+
                         <div class="ml-5 md:ml-0 w-full md:w-1/2 md:pl-12 mt-4 md:mt-0 order-2 md:order-2 px-2">
                             <h3 class="font-romantic text-2xl text-love mb-2">${item.title}</h3>
                             <p class="text-neutral-100/80">${item.description}</p>
@@ -546,7 +546,7 @@
                             <h3 class="font-romantic text-2xl text-love mb-2">${item.title}</h3>
                             <p class="text-neutral-100/80">${item.description}</p>
                         </div>
-                        
+
                         <div class="ml-5 md:ml-0 mt-4 md:mt-0 w-full md:w-1/2 md:pl-12 px-2">
                             <div class="rounded-xl overflow-hidden shadow-soft transform transition-transform hover:scale-105 touch-friendly">
                                 ${item.isFuture ?

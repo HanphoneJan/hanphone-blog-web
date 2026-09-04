@@ -10,7 +10,7 @@
     <!-- 引入html2canvas和jsPDF库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    
+
     <script>
         tailwind.config = {
             theme: {
@@ -54,7 +54,7 @@
             }
         }
     </script>
-    
+
     <style type="text/tailwindcss">
         @layer utilities {
             .text-shadow {
@@ -68,7 +68,7 @@
             }
             .bg-grid {
                 background-size: 40px 40px;
-                background-image: 
+                background-image:
                     linear-gradient(to right, rgba(22, 93, 255, 0.05) 1px, transparent 1px),
                     linear-gradient(to bottom, rgba(22, 93, 255, 0.05) 1px, transparent 1px);
             }
@@ -748,7 +748,7 @@
                                 <span class="text-xs bg-white px-2 py-1 rounded border border-secondary/20 text-secondary shadow-sm transition-all duration-300">PostgreSQL</span>
                             </div>
                             <div class="mt-2">
-                                <a href="https://hanphone.cloud" target="_blank" class="text-primary text-sm hover:underline">项目地址：https://hanphone.cloud</a>
+                                <a href="https://docs.hanphone.cn" target="_blank" class="text-primary text-sm hover:underline">项目地址：https://docs.hanphone.cn</a>
                             </div>
                         </div>
                     </div>
@@ -1000,7 +1000,7 @@
                         <p class="text-gray-500 transition-colors duration-300">软件工程专业 | AI大模型产品开发</p>
                     </div>
                     <div class="flex gap-6">
-                        <a href="https://hanphone.cloud/" class="footer-link w-12 h-12 rounded-full bg-light flex items-center justify-center border border-primary/20 text-gray-600 hover:text-primary hover:border-primary/50 transition-all duration-300">
+                        <a href="https://docs.hanphone.cn/" class="footer-link w-12 h-12 rounded-full bg-light flex items-center justify-center border border-primary/20 text-gray-600 hover:text-primary hover:border-primary/50 transition-all duration-300">
                             <i class="fa fa-globe"></i>
                         </a>
                         <a href="mailto:janhizian@qq.com" class="footer-link w-12 h-12 rounded-full bg-light flex items-center justify-center border border-primary/20 text-gray-600 hover:text-primary hover:border-primary/50 transition-all duration-300">
@@ -1029,17 +1029,17 @@
     <script>
         // 导出PDF功能
         const exportPdfBtn = document.getElementById('exportPdf');
-        
+
         exportPdfBtn.addEventListener('click', async () => {
             try {
                 // 显示加载提示
                 const originalHtml = exportPdfBtn.innerHTML;
                 exportPdfBtn.innerHTML = '<i class="fa fa-spinner fa-spin text-primary"></i>';
                 exportPdfBtn.disabled = true;
-                
+
                 // 确定要导出的内容
                 const contentToExport = isOnePageMode ? onePageView : fullView;
-                
+
                 // 使用html2canvas将HTML内容转换为图片
                 const canvas = await html2canvas(contentToExport, {
                     scale: 2, // 提高分辨率
@@ -1048,14 +1048,14 @@
                     scrollX: 0,
                     scrollY: -window.scrollY
                 });
-                
+
                 // 创建PDF
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF('p', 'mm', 'a4');
-                
+
                 // 获取图片数据
                 const imgData = canvas.toDataURL('image/png');
-                
+
                 // 计算图片尺寸以适应PDF页面
                 const pdfWidth = pdf.internal.pageSize.getWidth();
                 const pdfHeight = pdf.internal.pageSize.getHeight();
@@ -1064,21 +1064,21 @@
                 const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
                 const imgX = (pdfWidth - imgWidth * ratio) / 2;
                 const imgY = 10;
-                
+
                 // 添加图片到PDF
                 pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-                
+
                 // 保存PDF
                 pdf.save('寒枫-个人简历.pdf');
-                
+
                 // 恢复按钮状态
                 exportPdfBtn.innerHTML = originalHtml;
                 exportPdfBtn.disabled = false;
-                
+
             } catch (error) {
                 console.error('导出PDF失败:', error);
                 alert('导出PDF失败，请重试或联系管理员');
-                
+
                 // 恢复按钮状态
                 exportPdfBtn.innerHTML = '<i class="fa fa-file-pdf-o text-primary"></i>';
                 exportPdfBtn.disabled = false;
@@ -1094,19 +1094,19 @@
         // 切换显示模式
         viewModeToggle.addEventListener('click', () => {
             isOnePageMode = !isOnePageMode;
-            
+
             if (isOnePageMode) {
                 onePageView.classList.add('active');
                 fullView.classList.add('hidden');
                 viewModeToggle.innerHTML = '<i class="fa fa-expand text-primary"></i>';
-                
+
                 // 在一页模式下隐藏粒子背景
                 document.getElementById('particles-js').style.display = 'none';
             } else {
                 onePageView.classList.remove('active');
                 fullView.classList.remove('hidden');
                 viewModeToggle.innerHTML = '<i class="fa fa-compress text-primary"></i>';
-                
+
                 // 根据主题显示粒子背景
                 if (isDarkMode) {
                     document.getElementById('particles-js').style.display = 'block';
@@ -1137,33 +1137,33 @@
             isDarkMode = true;
             body.classList.remove('theme-light');
             body.classList.add('theme-dark');
-            
+
             // 更新颜色属性
             body.classList.remove('bg-light', 'text-dark');
             body.classList.add('bg-dark', 'text-gray-200');
-            
+
             // 更新导航栏
             document.querySelector('nav').classList.remove('border-primary/10', 'shadow-sm');
             document.querySelector('nav').classList.add('border-primary/20');
-            
+
             // 更新玻璃态背景
             document.querySelectorAll('.glass').forEach(el => {
                 el.classList.remove('bg-white/70');
                 el.classList.add('bg-dark-light/70');
             });
-            
+
             // 更新卡片背景
             document.querySelectorAll('.bg-white').forEach(el => {
                 el.classList.remove('bg-white', 'shadow-sm');
                 el.classList.add('bg-dark-light', 'border-primary/20');
             });
-            
+
             // 更新浅色灰色背景
             document.querySelectorAll('.bg-light-gray').forEach(el => {
                 el.classList.remove('bg-light-gray');
                 el.classList.add('bg-dark');
             });
-            
+
             // 更新文字颜色
             document.querySelectorAll('.text-gray-600').forEach(el => {
                 el.classList.remove('text-gray-600');
@@ -1177,35 +1177,35 @@
                 el.classList.remove('text-gray-500');
                 el.classList.add('text-gray-500'); // 保持不变
             });
-            
+
             // 更新渐变背景
             document.querySelector('header .bg-gradient-to-b').classList.remove('from-primary/5');
             document.querySelector('header .bg-gradient-to-b').classList.add('from-dark-light/30');
-            
+
             // 更新装饰圆环
             document.querySelectorAll('.bg-gradient-to-r.from-white.to-light-gray').forEach(el => {
                 el.classList.remove('from-white', 'to-light-gray');
                 el.classList.add('from-dark-light', 'to-dark');
             });
-            
+
             // 更新页脚
             document.querySelector('footer').classList.remove('bg-white', 'border-primary/10');
             document.querySelector('footer').classList.add('bg-dark-light', 'border-primary/10');
-            
+
             // 更新主题切换按钮图标
             themeToggle.innerHTML = '<i class="fa fa-sun-o text-primary"></i>';
-            
+
             // 显示粒子背景
             if (!isOnePageMode) {
                 document.getElementById('particles-js').style.display = 'block';
             }
-            
+
             // 更新页脚链接样式
             document.querySelectorAll('.footer-link').forEach(link => {
                 link.classList.remove('bg-light', 'text-gray-600');
                 link.classList.add('bg-dark-light', 'text-gray-400');
             });
-            
+
             // 保存主题偏好
             localStorage.setItem('theme', 'dark');
         }
@@ -1215,21 +1215,21 @@
             isDarkMode = false;
             body.classList.remove('theme-dark');
             body.classList.add('theme-light');
-            
+
             // 更新颜色属性
             body.classList.remove('bg-dark', 'text-gray-200');
             body.classList.add('bg-light', 'text-dark');
-            
+
             // 更新导航栏
             document.querySelector('nav').classList.remove('border-primary/20');
             document.querySelector('nav').classList.add('border-primary/10', 'shadow-sm');
-            
+
             // 更新玻璃态背景
             document.querySelectorAll('.glass').forEach(el => {
                 el.classList.remove('bg-dark-light/70');
                 el.classList.add('bg-white/70');
             });
-            
+
             // 更新卡片背景
             document.querySelectorAll('.bg-dark-light').forEach(el => {
                 if (!el.closest('.theme-dark')) { // 避免冲突
@@ -1237,7 +1237,7 @@
                     el.classList.add('bg-white', 'shadow-sm');
                 }
             });
-            
+
             // 更新浅色灰色背景
             document.querySelectorAll('.bg-dark').forEach(el => {
                 if (!el.closest('.theme-dark') && !el.classList.contains('bg-dark-light')) {
@@ -1245,7 +1245,7 @@
                     el.classList.add('bg-light-gray');
                 }
             });
-            
+
             // 更新文字颜色
             document.querySelectorAll('.text-gray-400').forEach(el => {
                 el.classList.remove('text-gray-400');
@@ -1255,27 +1255,27 @@
                 el.classList.remove('text-gray-300');
                 el.classList.add('text-gray-800');
             });
-            
+
             // 更新渐变背景
             document.querySelector('header .bg-gradient-to-b').classList.remove('from-dark-light/30');
             document.querySelector('header .bg-gradient-to-b').classList.add('from-primary/5');
-            
+
             // 更新装饰圆环
             document.querySelectorAll('.bg-gradient-to-r.from-dark-light.to-dark').forEach(el => {
                 el.classList.remove('from-dark-light', 'to-dark');
                 el.classList.add('from-white', 'to-light-gray');
             });
-            
+
             // 更新页脚
             document.querySelector('footer').classList.remove('bg-dark-light');
             document.querySelector('footer').classList.add('bg-white');
-            
+
             // 更新主题切换按钮图标
             themeToggle.innerHTML = '<i class="fa fa-moon-o text-primary"></i>';
-            
+
             // 隐藏粒子背景
             document.getElementById('particles-js').style.display = 'none';
-            
+
             // 保存主题偏好
             localStorage.setItem('theme', 'light');
         }
@@ -1414,13 +1414,13 @@
                 const targetId = this.getAttribute('href');
                 const targetElement = document.querySelector(targetId);
                 const navHeight = document.querySelector('nav').offsetHeight;
-                
+
                 // 获取目标元素的位置
                 const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
-                
+
                 // 计算需要滚动的位置，减去导航栏的高度
                 const offsetPosition = targetPosition - navHeight - 20; // 20px是额外的间距
-                
+
                 window.scrollTo({
                     top: offsetPosition,
                     behavior: 'smooth'
@@ -1453,7 +1453,7 @@
             initTheme();
             initParticles();
             animateOnScroll();
-            
+
             // 监听滚动事件
             window.addEventListener('scroll', animateOnScroll);
         });

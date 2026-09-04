@@ -34,7 +34,7 @@ export const SOCIAL_LINKS = [
 // ==================== 外部链接 ====================
 export const EXTERNAL_LINKS = {
   docs: {
-    href: 'https://hanphone.cloud',
+    href: 'https://docs.hanphone.cn',
     text: '技术文档站'
   }
 } as const
