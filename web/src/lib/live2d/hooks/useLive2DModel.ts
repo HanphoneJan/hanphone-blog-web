@@ -191,10 +191,11 @@ export function useLive2DModel(options: UseLive2DModelOptions) {
       // 创建PIXI应用
       if (!appRef.current) {
         const canvas = canvasRef.current;
+        // 逻辑尺寸必须用 CSS 尺寸（canvas.width 会被 autoDensity 改写为物理像素）
         appRef.current = new PIXI.Application({
           view: canvas,
-          width: canvas.width || 220,
-          height: canvas.height || 320,
+          width: canvas.clientWidth || 220,
+          height: canvas.clientHeight || 320,
           backgroundAlpha: 0,
           antialias: true,
           resolution: window.devicePixelRatio || 1,
@@ -217,9 +218,10 @@ export function useLive2DModel(options: UseLive2DModelOptions) {
       // 添加到舞台
       appRef.current.stage.addChild(model);
       
-      // 获取 Canvas 实际尺寸
-      const canvasWidth = canvasRef.current.width || 220;
-      const canvasHeight = canvasRef.current.height || 320;
+      // 获取 Canvas 逻辑尺寸（app.screen 为逻辑坐标，不受 devicePixelRatio 影响；
+      // canvas.width/height 是物理像素 = 逻辑尺寸 × dpr，直接用于布局会导致模型放大 dpr 倍且错位）
+      const canvasWidth = appRef.current.screen.width;
+      const canvasHeight = appRef.current.screen.height;
       
       // 获取模型原始尺寸
       const modelWidth = model.internalWidth || model.width || 500;
