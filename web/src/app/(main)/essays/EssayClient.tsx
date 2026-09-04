@@ -157,10 +157,13 @@ export default function EssayClient({ initialEssays }: EssayClientProps) {
 
   // 更新URL哈希 - 如果没有检测到可见随笔，使用第一篇随笔的id作为默认哈希
   useEffect(() => {
-    if (typeof window !== 'undefined' && state.essays.length > 0) {
-      const targetId = visibleEssayId ?? state.essays[0].id
-      window.history.replaceState({}, '', `#${targetId}`)
-    }
+    if (typeof window === 'undefined' || state.essays.length === 0) return
+    // 已离开随笔页（如导航到其他页面的退场动画期间）时不再改写 URL，
+    // 否则 replaceState 会把路由刚 push 的新页面历史条目改回 /essays#id，
+    // 导致导航失败/URL 错乱
+    if (!window.location.pathname.startsWith('/essays')) return
+    const targetId = visibleEssayId ?? state.essays[0].id
+    window.history.replaceState({}, '', `#${targetId}`)
   }, [visibleEssayId, state.essays])
 
   return (

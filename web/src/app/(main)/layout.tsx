@@ -7,6 +7,7 @@ import { Metadata } from 'next'
 import { SITE_CONFIG, SITE_URL } from '@/lib/seo-config'
 import { PageTransition } from '@/components/shared/PageTransition'
 import { LoadingBar } from '@/components/shared/LoadingBar'
+import { ScrollReset } from './components/ScrollReset'
 
 export const metadata: Metadata = {
   description: SITE_CONFIG.description,
@@ -44,6 +45,9 @@ export default function MainLayout({
 
       {/* 全局加载进度条 */}
       <LoadingBar />
+
+      {/* 路由变化时重置滚动（popstate 后退/前进除外） */}
+      <ScrollReset />
 
       <Header />
 
